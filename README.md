@@ -1,5 +1,8 @@
 # # CMS - 后台管理系统
  
+ 1.由于部分文旦还未完善, 目前制作简单介绍
+ 2.web服务后台暂不开源
+ 
 # 快速了解
 
 Cms-后台管理系统 基于 Spring Cloud Alibaba Nacos、Spring Boot 2.3.3 、 Vue3.0、 JWT、TypeScript、Redis、Vue、Element-UI、 的前后端分离的后台管理系统， 项目采用微服务模块的开发方式，权限控制采用 RBAC 思想，支持数据字典与数据权限管理，支持前端菜单动态路由等
