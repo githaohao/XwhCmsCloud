@@ -1,0 +1,16 @@
+spring:
+    application:
+        name: cms-gateway
+    main:
+        allow-bean-definition-overriding: true
+    cloud:
+        gateway:
+            discovery:
+                locator:
+                    enabled: true # 开启从注册中心动态创建路由的功能，利用微服务名进行路由
+        nacos:
+            discovery:
+                server-addr: ${nacosUrl:nacos:8848} # 注册中心地址
+            config:
+                server-addr: ${spring.cloud.nacos.discovery.server-addr} # 配置中心地址
+                file-extension: yml # 假如不配置，则nacos远程配置文件的后缀为.properties
