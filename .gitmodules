@@ -1,0 +1,3 @@
+[submodule "cms-system"]
+	path = cms-system
+	url = https://githaohao@github.com/githaohao/XwhCmsCloud.git
