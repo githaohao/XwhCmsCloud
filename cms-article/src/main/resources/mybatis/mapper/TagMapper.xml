@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 注意：文件名必须跟Dao类名字一致，因为是根据文件名做关联。 -->
+<mapper namespace="com.xwh.article.mapper.TagMapper">
+    <select id="tagListByUser" resultType="com.xwh.article.entity.Tag">
+        select *
+        from tag t
+                 left join tag_user pt on t.tag_id = pt.tag_id
+        <where>
+            pt.user_id = #{userId}
+            <if test="tag.name != null and tag.name != ''">
+                and t.name like concat('%', #{tag.name}, '%')
+            </if>
+        </where>
+        order by t.update_time desc
+    </select>
+
+</mapper>
+
