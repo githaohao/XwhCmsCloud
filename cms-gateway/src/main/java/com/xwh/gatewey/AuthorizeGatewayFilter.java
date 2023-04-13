@@ -1,6 +1,6 @@
 package com.xwh.gatewey;
 
-import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson.JSON;
 import com.xwh.core.dto.Result;
 import com.xwh.core.utils.BlankUtils;
@@ -15,7 +15,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
-import cn.hutool.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
@@ -24,12 +23,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
-
-import static org.bouncycastle.asn1.cms.CMSObjectIdentifiers.data;
 
 @Component
 public class AuthorizeGatewayFilter implements GlobalFilter, Ordered {

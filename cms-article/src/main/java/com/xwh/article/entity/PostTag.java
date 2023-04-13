@@ -1,5 +1,6 @@
 package com.xwh.article.entity;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Getter;
 import lombok.Setter;
 

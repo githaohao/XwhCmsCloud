@@ -16,14 +16,14 @@ import java.util.List;
 public class ResourceApplicationRunner implements ApplicationRunner {
 
     final SysResourceService sysResourceService;
-    final String service = "article";
-    final String serviceTitle = "demo";
-    final String servicePack = "com.xwh.article.controller";
+    final String service = "demo";
+    final String serviceTitle = "微信管理";
+    final String servicePack = "com.xwh.demo.controller";
 
 
     @Override
     public void run(ApplicationArguments args) {
-        List<String> apiByPackage = FindClassesByPackage.findApiByPackage(servicePack, service, serviceTitle);
+        String apiByPackage = FindClassesByPackage.findApiByPackage(servicePack, service, serviceTitle);
         sysResourceService.saveResourceIsUpdate(apiByPackage,service);
     }
 }

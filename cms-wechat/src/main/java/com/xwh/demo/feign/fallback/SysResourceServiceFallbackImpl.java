@@ -20,7 +20,7 @@ public class SysResourceServiceFallbackImpl implements SysResourceService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public Result saveResourceIsUpdate(@RequestBody List<String> apiByPackage, @PathVariable("service") String service) {
+    public Result saveResourceIsUpdate(String apiList, String service) {
         logger.error("调用{}异常:{}", "service", service);
         return  Result.fail();
     }

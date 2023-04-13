@@ -97,15 +97,15 @@ public class Post extends BaseTenantEntity implements Serializable {
 
 
     @ApiModelProperty(value = "内容字数")
-            @ColumnDefault("0")
-            private Long wordCount;
+    @ColumnDefault("0")
+    private Long wordCount;
 
-            @ApiModelProperty(value = "发布版本")
-            @ColumnDefault("1")
-            private Integer version;
+    @ApiModelProperty(value = "发布版本")
+    @ColumnDefault("1")
+    private Integer version;
 
-            @ApiModelProperty(value = "文章标签")
-            @Column(length = 200)
+    @ApiModelProperty(value = "文章标签")
+    @Column(length = 200)
     private String tags;
 
 }

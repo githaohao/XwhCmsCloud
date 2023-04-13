@@ -1,8 +1,5 @@
 package com.xwh.system.controller;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.collection.ListUtil;
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xwh.core.controller.BaseController;
 import com.xwh.core.dto.Result;
@@ -16,7 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 接口权限控制
@@ -47,6 +47,16 @@ public class ResourcesController extends BaseController {
         return success().add(strings);
     }
 
+    /**
+     * 新增单个接口
+     * @return
+     */
+    @PostMapping()
+    @ApiOperation("新增单个接口")
+    public Result add(@RequestBody SysResource sysResource){
+        sysResourceService.save(sysResource);
+        return success();
+    }
 
     /**
      * 保存该角色的授权

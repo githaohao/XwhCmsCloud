@@ -2,19 +2,14 @@ package com.xwh.gatewey.config.swagger;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.gateway.handler.AsyncPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import springfox.documentation.swagger.web.*;
-
-import javax.annotation.Resource;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import springfox.documentation.swagger.web.SecurityConfiguration;
+import springfox.documentation.swagger.web.SwaggerResourcesProvider;
+import springfox.documentation.swagger.web.UiConfiguration;
 
 /**
  * @author xiangwenhao

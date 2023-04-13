@@ -29,12 +29,12 @@ public class MonitorApplication {
     @Resource
     SysResourceService sysResourceService;
 
-    @Bean
-    public void updateResources(){
-        final String service = "article";
-        final String serviceTitle = "文章管理";
-        final String servicePack = "com.xwh.article";
-        List<String> apiByPackage = FindClassesByPackage.findApiByPackage(servicePack, service, serviceTitle);
-        sysResourceService.saveResourceIsUpdate(apiByPackage,service);
-    }
+//    @Bean
+//    public void updateResources(){
+//        final String service = "article";
+//        final String serviceTitle = "文章管理";
+//        final String servicePack = "com.xwh.article";
+//        List<String> apiByPackage = FindClassesByPackage.findApiByPackage(servicePack, service, serviceTitle);
+//        sysResourceService.saveResourceIsUpdate(apiByPackage,service);
+//    }
 }
