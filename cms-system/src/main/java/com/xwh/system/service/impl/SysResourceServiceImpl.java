@@ -3,7 +3,9 @@ package com.xwh.system.service.impl;
 import cn.hutool.core.collection.CollStreamUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xwh.core.exception.FailException;
 import com.xwh.system.entity.SysResource;
 import com.xwh.system.mapper.SysResourceMapper;
 import com.xwh.system.service.SysResourceService;
@@ -29,7 +31,6 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
 
     /**
      * 通过角色id查询所有的接口授权id
-     *
      * @return
      */
     @Override
@@ -76,7 +77,6 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
 
     /**
      *  更新该服务的接口
-     * @param apiByPackage
      * @param service
      */
     @Override
@@ -94,6 +94,10 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
 
         //判断本次新增的数据
         for (SysResource resource : list) {
+            // 如果Controller为空忽略
+            if (StringUtils.isBlank(resource.getController())) {
+                continue;
+            }
             if (myListContains(list1, resource)) {
                 addList.add(resource);
             }
@@ -153,8 +157,15 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         }
 
     }
-    @Override
 
+    /**
+     * 判断是否存在
+     * @param sourceList
+     * @param element
+     * @return
+     * @param <E>
+     */
+    @Override
     public <E> boolean myListContains(List<SysResource> sourceList, SysResource element) {
         if (sourceList == null || element == null) {
             return true;
@@ -170,6 +181,36 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean add(SysResource sysResource) {
+        // 通过path 提取Controller和Service
+        String path = sysResource.getPath();
+        String[] split = path.split("/");
+        String service = split[1];
+        String controller = split[2];
+        // 推断出通过service 和 controller 查询 serviceDesc 和 controllerDesc
+        List<SysResource> list = list(new QueryWrapper<SysResource>().eq("service", service).eq("controller", controller));
+        // 如果存在数据
+        if (list.size() > 0) {
+            SysResource res = list.get(0);
+            sysResource.setServiceDesc(res.getServiceDesc());
+            sysResource.setControllerDescription(res.getControllerDescription());
+        }
+        // 将isUpdate设置为true
+
+        sysResource.setService(service);
+        sysResource.setController(controller);
+
+        //查询当前接口是否存在重复
+        List<SysResource> sysResourceList = list(new QueryWrapper<SysResource>().eq("path", sysResource.getPath()).eq("type", sysResource.getType()));
+        if (sysResourceList.size() > 0) {
+            throw new FailException("当前接口已存在");
+        }
+
+        // 保存该接口
+        return save(sysResource);
     }
 
 }

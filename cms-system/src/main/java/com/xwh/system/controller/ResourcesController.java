@@ -51,10 +51,10 @@ public class ResourcesController extends BaseController {
      * 新增单个接口
      * @return
      */
-    @PostMapping()
+    @PostMapping("add")
     @ApiOperation("新增单个接口")
     public Result add(@RequestBody SysResource sysResource){
-        sysResourceService.save(sysResource);
+        sysResourceService.add(sysResource);
         return success();
     }
 

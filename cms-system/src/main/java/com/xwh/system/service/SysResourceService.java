@@ -43,4 +43,5 @@ public interface SysResourceService extends IService<SysResource> {
 
     public <E> boolean myListContains(List<SysResource> sourceList, SysResource element);
 
+    boolean add(SysResource sysResource);
 }
