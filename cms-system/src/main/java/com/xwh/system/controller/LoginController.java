@@ -29,7 +29,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-@Api(tags = "系统：系统授权")
+@Api(tags = "系统:系统授权")
 @Slf4j
 public class LoginController extends BaseController {
 

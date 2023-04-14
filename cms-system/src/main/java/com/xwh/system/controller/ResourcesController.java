@@ -26,7 +26,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/resource")
-@Api(tags = "系统：接口授权")
+@Api(tags = "系统:接口授权")
 @Slf4j
 @RequiredArgsConstructor
 public class ResourcesController extends BaseController {

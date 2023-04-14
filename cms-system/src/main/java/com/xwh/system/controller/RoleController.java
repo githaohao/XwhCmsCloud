@@ -23,7 +23,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/role")
-@Api(tags = "系统：角色管理")
+@Api(tags = "系统:角色管理")
 @Slf4j
 public class RoleController extends BaseController {
 

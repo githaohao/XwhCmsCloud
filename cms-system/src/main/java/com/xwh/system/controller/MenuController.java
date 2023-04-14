@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/menu")
-@Api(tags = "系统：菜单管理")
+@Api(tags = "系统:菜单管理")
 @RequiredArgsConstructor
 public class MenuController extends BaseController {
 

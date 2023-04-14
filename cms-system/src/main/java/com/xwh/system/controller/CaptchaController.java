@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/captcha")
 @RequiredArgsConstructor
-@Api(tags = "系统：验证码")
+@Api(tags = "系统:验证码")
 public class CaptchaController extends BaseController {
 
 	final LoginProperties loginProperties;

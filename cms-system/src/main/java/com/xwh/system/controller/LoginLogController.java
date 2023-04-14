@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/loginlog")
-@Api(tags = "系统：登录日志")
+@Api(tags = "系统:登录日志")
 @Slf4j
 public class LoginLogController extends BaseController {
 

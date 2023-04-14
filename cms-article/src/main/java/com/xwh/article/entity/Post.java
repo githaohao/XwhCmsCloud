@@ -95,7 +95,6 @@ public class Post extends BaseTenantEntity implements Serializable {
     @Column(length = 1023)
     private String metaDescription;
 
-
     @ApiModelProperty(value = "内容字数")
     @ColumnDefault("0")
     private Long wordCount;

@@ -24,7 +24,7 @@ import java.util.Map;
 @RequestMapping("/dict")
 @RequiredArgsConstructor
 @Slf4j
-@Api(tags = "系统: 字典管理")
+@Api(tags = "系统:字典管理")
 public class DictController extends BaseController {
 
     final SysDictService sysDictService;

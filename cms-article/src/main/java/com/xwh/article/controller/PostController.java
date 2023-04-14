@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/post")
-@Api(tags = "文章: 文章管理")
+@Api(tags = "文章:文章管理")
 @Slf4j
 @RequiredArgsConstructor
 public class PostController extends BaseController {

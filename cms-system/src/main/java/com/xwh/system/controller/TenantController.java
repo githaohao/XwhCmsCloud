@@ -17,7 +17,7 @@ import java.util.Arrays;
 @RequestMapping("/tenant")
 @Slf4j
 @RequiredArgsConstructor
-@Api(tags = "系统：租户管理")
+@Api(tags = "系统:租户管理")
 public class TenantController extends BaseController {
     final SysTenantService sysTenantService;
 

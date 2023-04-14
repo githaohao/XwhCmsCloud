@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("blog")
-@Api(tags = "博客接口管理")
+@Api(tags = "文章:博客接口管理")
 public class BlogController extends BaseController {
 
     final PostService postService;

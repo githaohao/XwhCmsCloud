@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tag")
-@Api(tags = "文章: 我的标签")
+@Api(tags = "文章:我的标签")
 @Slf4j
 @RequiredArgsConstructor
 public class TagController extends BaseController {

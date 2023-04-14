@@ -28,7 +28,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
-@Api(tags = "系统：用户管理")
+@Api(tags = "系统:用户管理")
 @Slf4j
 public class UserController extends BaseController {
 
