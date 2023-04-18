@@ -55,22 +55,6 @@ public class PostController extends BaseController {
         return success().add(postPageInfo);
     }
 
-    @ApiOperation("获取我的文章标题列表")
-    @PostMapping("list")
-    public Result list(@RequestBody PostParam param) {
-        Page<Post> postPageInfo = postService.postByUser(param);
-        return success().add(propertyDel(postPageInfo,
-                "content"
-        ));
-    }
-
-    @ApiOperation("获取我的单个文章")
-    @GetMapping("{postId}")
-    public Result listByUser(@PathVariable String postId) {
-       return success().add(postService.getByIdAndUser(postId));
-    }
-
-
     @ApiOperation("删除根据id删除")
     @DeleteMapping("user")
     public Result delByIds(@RequestBody String[] ids) {

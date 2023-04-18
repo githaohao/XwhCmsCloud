@@ -5,12 +5,17 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author xwh
  **/
 @Data
 @ApiModel
 public class PostParam extends Page<PostParam> {
+
+    @ApiModelProperty(value = "文章id")
+    private String postId;
 
     @ApiModelProperty(value = "文章标题")
     private String title;

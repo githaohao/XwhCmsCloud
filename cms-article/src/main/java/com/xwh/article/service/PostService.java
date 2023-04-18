@@ -2,7 +2,6 @@ package com.xwh.article.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xwh.article.entity.Post;
-import com.xwh.article.entity.dto.PostUserDto;
 import com.xwh.article.service.param.PostParam;
 import com.xwh.core.dao.Page;
 
@@ -34,5 +33,12 @@ public interface PostService extends IService<Post> {
     public Page<Post> postByUser(PostParam param);
 
 
-    PostUserDto getByIdAndUser(String postId);
+    /**
+     * 查询单个文章
+     *
+     * @param param
+     * @return
+     */
+    Page<Post> getPost(PostParam param);
+
 }

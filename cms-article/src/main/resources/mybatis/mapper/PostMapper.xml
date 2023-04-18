@@ -14,6 +14,9 @@
             <if test="param.title != null">
                 AND title LIKE CONCAT('%', #{param.title}, '%')
             </if>
+            <if test="param.postId != null">
+                AND id = #{param.postId}
+            </if>
         </where>
     </select>
 </mapper>

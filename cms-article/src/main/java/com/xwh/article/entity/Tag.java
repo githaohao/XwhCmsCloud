@@ -18,7 +18,6 @@ import java.io.Serializable;
 @Setter
 @Getter
 @Entity
-@TableName("tag")
 public class Tag extends BaseTenantEntity implements Serializable {
 
     @Id
@@ -43,5 +42,4 @@ public class Tag extends BaseTenantEntity implements Serializable {
     @ApiModelProperty(value = "封面缩略图")
     @Column(length = 1023)
     private String thumbnail;
-
 }

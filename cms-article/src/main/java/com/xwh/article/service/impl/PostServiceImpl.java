@@ -5,8 +5,6 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xwh.article.entity.Post;
 import com.xwh.article.entity.PostTag;
-import com.xwh.article.entity.Tag;
-import com.xwh.article.entity.dto.PostUserDto;
 import com.xwh.article.feign.SysUserService;
 import com.xwh.article.mapper.PostMapper;
 import com.xwh.article.mapper.PostTagMapper;
@@ -18,11 +16,8 @@ import com.xwh.core.exception.FailException;
 import com.xwh.core.utils.StringUtil;
 import com.xwh.core.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -95,8 +90,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
 
     /**
-     * 查询当前用的文章
-     *
+     * 查询当前用户的的文章列表
      * @param param
      * @return
      */
@@ -106,17 +100,14 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         return postMapper.postByUser(userId, param);
     }
 
+    /**
+     * 根据文章id查询文章
+     *
+     * @return
+     */
     @Override
-    public PostUserDto getByIdAndUser(String postId) {
-        Post postUser = getById(postId);
-        // 获得该文章的用户
-        Map<String, Object> userMap = BeanUtil.beanToMap(sysUserService.findById(postUser.getUserId()).getData(), "nickname", "avatar");
-        PostUserDto postUserDto = BeanUtil.toBean(postUser, PostUserDto.class);
-        // 获得该文章的标签列表
-        postUserDto.setUser(userMap);
-        List<Tag> tagsByPostId = postTagMapper.getTagsByPostId(postUserDto.getPostId());
-        postUserDto.setTagList(tagsByPostId);
-        return postUserDto;
+    public Page<Post> getPost(PostParam postParam) {
+        // 判断是否是该用户的文章
+        return postMapper.postByUser(null, postParam);
     }
 }
-

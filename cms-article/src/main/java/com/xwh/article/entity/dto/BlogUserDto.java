@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class PostUserDto {
+public class BlogUserDto {
 
     @Id
     @Column(length = 20)
