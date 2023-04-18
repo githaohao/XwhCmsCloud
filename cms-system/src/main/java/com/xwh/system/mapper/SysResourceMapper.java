@@ -3,6 +3,7 @@ package com.xwh.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xwh.system.entity.SysResource;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -34,4 +35,5 @@ public interface SysResourceMapper extends BaseMapper<SysResource> {
 
     @Select("SELECT sr.resource_id FROM `sys_role_resource` t left join sys_resource sr ON t.resource_id = sr.resource_id  WHERE role_id = #{roleId}")
     Set<String> resourceIdsByRoleId(String roleId);
+
 }

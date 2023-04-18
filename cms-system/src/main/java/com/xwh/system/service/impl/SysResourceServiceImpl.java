@@ -1,14 +1,16 @@
 package com.xwh.system.service.impl;
 
 import cn.hutool.core.collection.CollStreamUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.xwh.core.exception.FailException;
 import com.xwh.system.entity.SysResource;
+import com.xwh.system.entity.SysRoleResource;
 import com.xwh.system.mapper.SysResourceMapper;
 import com.xwh.system.service.SysResourceService;
+import com.xwh.system.service.SysRoleResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysResource> implements SysResourceService {
 
     final SysResourceMapper sysResourceMapper;
+    final SysRoleResourceService sysRoleResourceService;
 
     /**
      * 通过角色id查询所有的接口授权id
@@ -59,19 +62,17 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
      * @return
      */
     @Override
-    public ArrayList<Map<Object, Object>> groupService() {
+    public List<Map<String, Object>> groupService() {
         List<SysResource> sysResourceList = sysResourceMapper.listByGroupController();
         Map<String, List<SysResource>> map = CollStreamUtil.groupByKey(sysResourceList, SysResource::getService);
-        ArrayList<Map<Object, Object>> list = new ArrayList<>();
-        for (String s : map.keySet()) {
-            HashMap<Object, Object> sysService = new HashMap<>();
-            sysService.put("children", map.get(s));
-            sysService.put("service", s);
-            sysService.put("controller", map.get(s).get(0).getController());
-            sysService.put("controllerDescription", map.get(s).get(0).getServiceDesc());
-            list.add(sysService);
-        }
-        return list;
+
+        return map.entrySet().stream()
+                .map(entry -> Map.of(
+                        "children", entry.getValue(),
+                        "service", entry.getKey(),
+                        "controller", entry.getValue().get(0).getController(),
+                        "controllerDescription", entry.getValue().get(0).getServiceDesc()))
+                .collect(Collectors.toList());
     }
 
 
@@ -81,135 +82,101 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
      */
     @Override
     public void saveResourceIsUpdate(String str, String service) {
-        //本次接口和数据库中的接口进行对比
-        // 查询当前 service
-        List<String> apiByPackage = JSONArray.parseArray(str, String.class);
-        List<SysResource> list1 = listByMap(Map.of("is_update", 1,"service", service));
-        List<SysResource> list = apiByPackage.stream().map(item -> JSON.parseObject(item,SysResource.class)).collect(Collectors.toList());
+        // 将输入 JSON 解析为 SysResource 对象列表
+        List<SysResource> apiList = new Gson().fromJson(str, new TypeToken<List<SysResource>>(){}.getType());
 
-        List<SysResource> addList = new ArrayList<>();
-        List<SysResource> reduceList = new ArrayList<>();
-        List<SysResource> editList = new ArrayList<>();
+        // 查询给定服务和 is_update = 1 的现有 SysResource 对象
+        List<SysResource> existingApiList = listByMap(Map.of("is_update", 1,"service", service));
 
+        // 识别新的、删除的和编辑的 SysResource 对象
+        List<SysResource> newApiList = apiList.stream()
+                .filter(api -> StringUtils.isNotBlank(api.getController()))
+                .filter(api -> existingApiList.stream().noneMatch(existingApi -> StringUtils.equals(existingApi.getPath() + existingApi.getType(), api.getPath() + api.getType())))
+                .peek(api -> {
+                    api.setStatus(true);
+                    api.setIsUpdate(true);
+                    api.setIsPublic(false);
+                    save(api);
+                    log.info("系统_接口管理_新增接口 {}:{}", api.getType(), api.getPath());
+                })
+                .collect(Collectors.toList());
 
-        //判断本次新增的数据
-        for (SysResource resource : list) {
-            // 如果Controller为空忽略
-            if (StringUtils.isBlank(resource.getController())) {
-                continue;
-            }
-            if (myListContains(list1, resource)) {
-                addList.add(resource);
-            }
-        }
+        List<SysResource> removedApiList = existingApiList.stream()
+                .filter(existingApi -> apiList.stream().noneMatch(api -> StringUtils.equals(existingApi.getPath() + existingApi.getType(), api.getPath() + api.getType())))
+                .peek(existingApi -> {
+                    removeById(existingApi);
+                    log.info("系统_接口管理_删除接口 {}:{}", existingApi.getType(), existingApi.getPath());
+                    // Delete all role-resource mappings that contain the removed resource
+                    QueryWrapper<SysRoleResource> query = new QueryWrapper<>();
+                    query.eq("resource_id", existingApi.getResourceId());
+                    sysRoleResourceService.remove(query);
+                })
+                .collect(Collectors.toList());
 
-        //判断本次减少的数据
-        for (SysResource sysResource : list1) {
-            if (myListContains(list, sysResource)) {
-                reduceList.add(sysResource);
-            }
-        }
-
-        //判断本次编辑的数据
-        for (SysResource sysResource : list) {
-            for (SysResource tip : list1) {
-                String str1 = tip.getPath() + tip.getType();
-                String str2 = sysResource.getPath() + sysResource.getType();
-                // 变更部分
-                String str3 = sysResource.getDescription() +sysResource.getControllerDescription() +sysResource.getServiceDesc();
-                String str4 = tip.getDescription() +tip.getControllerDescription() +tip.getServiceDesc();
-                if (StringUtils.equals(str1, str2)) {
-                    // 存在变更项
-                    if (!StringUtils.equals(str3, str4) && tip.getIsUpdate()) {
-                        sysResource.setResourceId(tip.getResourceId());
-                        sysResource.setIsUpdate(tip.getIsUpdate());
-                        sysResource.setStatus(tip.getStatus());
-                        sysResource.setIsPublic(tip.getIsPublic());
-                        editList.add(sysResource);
-                    }
-                }
-            }
-        }
-
-
-        // 对减少数据进行删除
-        for (SysResource s : reduceList) {
-            removeById(s);
-            log.info("系统_接口管理_删除接口 {}:{}", s.getType(),s.getPath());
-            // 删除所有绑定的所有角色
-            System.out.println(s);
-            removeByMap(Map.of("resourceId", s));
-        }
-
-        //对于新增的数据进行添加操作
-        for (SysResource s : addList) {
-            s.setStatus(true);
-            s.setIsUpdate(true);
-            s.setIsPublic(false);
-            log.info("系统_接口管理_新增接口 {}:{}", s.getType(),s.getPath());
-            save(s);
-        }
-
-        //对于需要编辑的数据进行编辑
-        for (SysResource s : editList) {
-            log.info("系统_接口管理_编辑接口 {}:{}", s.getType(),s.getPath());
-            updateById(s);
-        }
-
+        List<SysResource> editedApiList = apiList.stream()
+                .filter(api -> StringUtils.isNotBlank(api.getController()))
+                .flatMap(api -> existingApiList.stream()
+                        .filter(existingApi -> StringUtils.equals(existingApi.getPath() + existingApi.getType(), api.getPath() + api.getType()))
+                        .filter(existingApi -> !StringUtils.equals(existingApi.getDescription() + existingApi.getControllerDescription() + existingApi.getServiceDesc(), api.getDescription() + api.getControllerDescription() + api.getServiceDesc()))
+                        .filter(existingApi -> existingApi.getIsUpdate())
+                        .peek(existingApi -> {
+                            api.setResourceId(existingApi.getResourceId());
+                            api.setIsUpdate(existingApi.getIsUpdate());
+                            api.setStatus(existingApi.getStatus());
+                            api.setIsPublic(existingApi.getIsPublic());
+                            updateById(api);
+                            log.info("系统_接口管理_编辑接口 {}:{}", api.getType(), api.getPath());
+                        }))
+                .collect(Collectors.toList());
     }
 
     /**
-     * 判断是否存在
-     * @param sourceList
-     * @param element
-     * @return
-     * @param <E>
+     *
+     * 根据元素的路径和类型检查列表是否包含元素。
+     * @author xwh
+     * @param sourceList 要检查的列表。
+     * @param element 要检查的元素。
+     * @param <E> 列表中元素的类型。 @return 如果列表包含该元素则为真，否则为假。
      */
     @Override
-    public <E> boolean myListContains(List<SysResource> sourceList, SysResource element) {
+    public <E> boolean myListContains(List<E> sourceList, E element) {
         if (sourceList == null || element == null) {
-            return true;
+            return false;
         }
-        if (sourceList.isEmpty()) {
-            return true;
-        }
-        for (SysResource tip : sourceList) {
-            String str1 = tip.getPath() + tip.getType();
-            String str2 = element.getPath() + element.getType();
-            if (str1.equals(str2)) {
-                return false;
-            }
-        }
-        return true;
+        String elementKey = ((SysResource) element).getPath() + ((SysResource) element).getType();
+        return sourceList.stream()
+                .filter(e -> e instanceof SysResource)
+                .map(e -> (SysResource) e)
+                .anyMatch(e -> ((e.getPath() + e.getType()).equals(elementKey)));
     }
 
     @Override
     public boolean add(SysResource sysResource) {
-        // 通过path 提取Controller和Service
+        // 从路径中提取控制器和服务
         String path = sysResource.getPath();
         String[] split = path.split("/");
         String service = split[1];
         String controller = split[2];
-        // 推断出通过service 和 controller 查询 serviceDesc 和 controllerDesc
+
+        // 使用service和controller查询serviceDesc和controllerDesc
         List<SysResource> list = list(new QueryWrapper<SysResource>().eq("service", service).eq("controller", controller));
-        // 如果存在数据
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             SysResource res = list.get(0);
             sysResource.setServiceDesc(res.getServiceDesc());
             sysResource.setControllerDescription(res.getControllerDescription());
         }
-        // 将isUpdate设置为true
 
+        // 将 isUpdate 设置为 true
         sysResource.setService(service);
         sysResource.setController(controller);
 
-        //查询当前接口是否存在重复
-        List<SysResource> sysResourceList = list(new QueryWrapper<SysResource>().eq("path", sysResource.getPath()).eq("type", sysResource.getType()));
-        if (sysResourceList.size() > 0) {
+        //检查重复接口
+        boolean exists = count(new QueryWrapper<SysResource>().eq("path", path).eq("type", sysResource.getType())) > 0;
+        if (exists) {
             throw new FailException("当前接口已存在");
         }
 
-        // 保存该接口
+        // 保存界面
         return save(sysResource);
     }
 

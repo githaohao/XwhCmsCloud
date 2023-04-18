@@ -3,7 +3,6 @@ package com.xwh.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xwh.system.entity.SysResource;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,14 +24,12 @@ public interface SysResourceService extends IService<SysResource> {
      */
     public void delGroupResource();
 
-
     /**
      * 返回权限的服务列表
      *
      * @return
      */
-    public ArrayList<Map<Object, Object>> groupService();
-
+    public List<Map<String, Object>> groupService();
 
     /**
      *  更新该服务的接口
@@ -41,7 +38,7 @@ public interface SysResourceService extends IService<SysResource> {
      */
     public void saveResourceIsUpdate(String apiByPackage, String service);
 
-    public <E> boolean myListContains(List<SysResource> sourceList, SysResource element);
+    <E> boolean myListContains(List<E> sourceList, E element);
 
     boolean add(SysResource sysResource);
 }

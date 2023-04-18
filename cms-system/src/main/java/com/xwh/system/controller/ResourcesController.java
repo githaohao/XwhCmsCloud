@@ -75,7 +75,7 @@ public class ResourcesController extends BaseController {
     @GetMapping("service")
     @ApiOperation("查询接口的 service 列表")
     public Result groupService() {
-        ArrayList<Map<Object, Object>> maps = sysResourceService.groupService();
+        List<Map<String, Object>> maps = sysResourceService.groupService();
         return success().add(maps);
     }
 
