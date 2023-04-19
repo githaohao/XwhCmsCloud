@@ -61,7 +61,6 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
             sysLoginLog.setRemoteAddr(ip);
             // 获取用户代理
             sysLoginLog.setUserAgent(BrowserUtils.checkBrowse(request));
-            sysLoginLog.preInsert();
             sysLoginLog.setLoginUsername(username);
             save(sysLoginLog);
         }

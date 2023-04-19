@@ -25,7 +25,7 @@ public class SaveLogThread extends Thread {
 
 	@Override
 	public void run() {
-		lv.preInsert();
+		lv.setCreateTimeAndUpdateTimeNow();
 		// 保存日志信息
 		logDao.saveLog(lv);
 	}

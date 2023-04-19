@@ -9,9 +9,12 @@ import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializeFilter;
 import com.xwh.core.dto.Result;
 import com.xwh.core.exception.FailException;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,10 +22,10 @@ import java.io.StringWriter;
 /**
  * @author xiangwenhao
  */
+
+@Slf4j
+@RestControllerAdvice
 public class BaseController {
-
-
-    protected Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * 属性去除
@@ -33,9 +36,7 @@ public class BaseController {
      * @return
      */
     public Object propertyDel(Object obj, String... strings) {
-        PropertyFilter propertyFilter = (object, name, value) -> {
-            return !StrUtil.equalsAny(name, strings);
-        };
+        PropertyFilter propertyFilter = (object, name, value) -> !StrUtil.equalsAny(name, strings);
         String s = JSON.toJSONString(obj, SerializeConfig.globalInstance, new SerializeFilter[]{propertyFilter}, "yyyy-MM-dd HH:mm:ss", JSON.DEFAULT_GENERATE_FEATURE);
         return JSON.parse(s);
     }
@@ -54,31 +55,12 @@ public class BaseController {
         return JSON.parse(s);
     }
 
-
     public static Result success(String message) {
-        Result result = new Result();
-        result.setCode(HttpStatus.HTTP_OK);
-        if (Validator.isEmpty(message)) {
-            result.setMessage("success!");
-        } else {
-
-            result.setMessage(message);
-        }
-        result.setSuccess(true);
-        return result;
+        return getResult(true, HttpStatus.HTTP_OK, message);
     }
 
-
     public static Result fail(String message) {
-        Result result = new Result();
-        result.setCode(HttpStatus.HTTP_BAD_REQUEST);
-        if (Validator.isEmpty(message)) {
-            result.setMessage("fail!");
-        } else {
-            result.setMessage(message);
-        }
-        result.setSuccess(false);
-        return result;
+        return getResult(false, HttpStatus.HTTP_BAD_REQUEST, message);
     }
 
     public static Result fail() {
@@ -89,52 +71,26 @@ public class BaseController {
         return success("");
     }
 
-    /**
-     * Exception result.
-     *
-     * @param e the e
-     * @return the result
-     * <p>
-     * 捕获 未知 异常
-     */
+    private static Result getResult(boolean success, int code, String message) {
+        Result result = new Result();
+        result.setSuccess(success);
+        result.setCode(code);
+        result.setMessage(Validator.isEmpty(message) ? "fail!" : message);
+        return result;
+    }
+
     @ExceptionHandler(Throwable.class)
     public Result exception(Throwable e) {
         log.error(getStackTrace(e));
-        Result result = new Result();
-        result.setCode(HttpStatus.HTTP_BAD_REQUEST);
-        result.setMessage(e.getMessage());
-        result.setSuccess(false);
-        return result;
+        return getResult(false, HttpStatus.HTTP_BAD_REQUEST, e.getMessage());
     }
 
-    /**
-     * Fail exception result.
-     *
-     * @param e the e
-     * @return the result
-     * <p>
-     * 获 FailException 异常
-     */
     @ExceptionHandler(FailException.class)
     public Result failException(FailException e) {
         log.error(getStackTrace(e));
-        Result result = new Result();
-        result.setCode(HttpStatus.HTTP_BAD_REQUEST);
-        if (Validator.isEmpty(e.getMessage())) {
-            result.setMessage("FailException!");
-        } else {
-            result.setMessage(e.getMessage());
-        }
-        result.setSuccess(false);
-        return result;
+        return getResult(false, HttpStatus.HTTP_BAD_REQUEST, Validator.isEmpty(e.getMessage()) ? "FailException!" : e.getMessage());
     }
 
-    /**
-     * 获取堆栈信息
-     *
-     * @param throwable the throwable
-     * @return the string
-     */
     public static String getStackTrace(Throwable throwable) {
         StringWriter sw = new StringWriter();
         try (PrintWriter pw = new PrintWriter(sw)) {
@@ -142,6 +98,4 @@ public class BaseController {
             return sw.toString();
         }
     }
-
-
 }
