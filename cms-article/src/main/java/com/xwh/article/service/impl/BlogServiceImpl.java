@@ -32,9 +32,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogUserDto getBlog(String postId) {
         // 获得该文章的用户
-        PostParam postParam = new PostParam();
-        postParam.setPostId(postId);
-        Page<Post> post = postService.getPost(postParam);
+        Post post = postService.getPost(postId);
         Map<String, Object> userMap = BeanUtil.beanToMap(post, "nickname", "avatar");
         BlogUserDto blogUserDto = BeanUtil.toBean(post, BlogUserDto.class);
         // 获得该文章的标签列表

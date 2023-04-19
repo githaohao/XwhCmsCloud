@@ -1,6 +1,5 @@
 package com.xwh.article.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xwh.article.entity.Post;
 import com.xwh.article.entity.Tag;
@@ -25,7 +24,7 @@ import java.util.List;
  * 博客接口
  *
  * @author xwh
- **/
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("blog")
@@ -35,33 +34,34 @@ public class BlogController extends BaseController {
     final PostService postService;
     final BlogService blogService;
     final TagService tagService;
+
+    /**
+     * List result.
+     *
+     * @param postParam the post param
+     * @return the result
+     */
     /*
     * 查询所有用户的公开文章分页模糊查询
     * */
     @ApiOperation("查询所有用户的公开文章分页模糊查询")
     @PostMapping("list")
     public Result list(@RequestBody  PostParam postParam){
-        Page<Post> page = new Page<>(postParam.getIndex(),postParam.getSize());
-        // 根据 visits 排序
-        QueryWrapper<Post> query = new QueryWrapper<>();
-        // title 模糊查询为空忽略
-        if (StringUtils.isNotBlank(postParam.getTitle())){
-            query.like("title",postParam.getTitle());
-        }
-        query.eq("status",1);
-        query.orderByDesc("visits");
-        Page<Post> postPage = postService.page(page,query);
-        return success().add(postPage);
+        Page<Post> postPage = postService.listPage(postParam);
+        return success().add(propertyShow(postPage,"postId","title","content","visits"));
     }
 
     /**
      * 查询单个文章
+     *
+     * @param postId the post id
+     * @return the result
      */
     @ApiOperation("查询单个文章")
     @GetMapping("get/{postId}")
     public Result get(@PathVariable String postId){
         BlogUserDto post = blogService.getBlog(postId);
-        return success().add(post);
+        return success().add(propertyDel(post,"password"));
     }
 
     @ApiOperation("查询点击量前20的标签")
@@ -71,6 +71,19 @@ public class BlogController extends BaseController {
         query.orderByDesc("visits");
         query.last("limit 20");
         List<Tag> list = tagService.list(query);
+        // 返回指定字段
+        return success().add(propertyShow(list,"name","visits","tagId","color"));
+    }
+
+    /**
+     * 获取全部标签
+     * @return result
+     */
+    @ApiOperation("获取全部标签")
+    @GetMapping("allTag")
+    public Result getAllTag(){
+        List<Tag> list = tagService.list();
+        // 返回指定字段
         return success().add(propertyShow(list,"name","visits","tagId","color"));
     }
 }

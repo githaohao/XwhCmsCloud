@@ -88,7 +88,7 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         // 查询给定服务和 is_update = 1 的现有 SysResource 对象
         List<SysResource> existingApiList = listByMap(Map.of("is_update", 1,"service", service));
 
-        // 识别新的、删除的和编辑的 SysResource 对象
+        // 对比识别新的、删除的和编辑的 SysResource 对象
         List<SysResource> newApiList = apiList.stream()
                 .filter(api -> StringUtils.isNotBlank(api.getController()))
                 .filter(api -> existingApiList.stream().noneMatch(existingApi -> StringUtils.equals(existingApi.getPath() + existingApi.getType(), api.getPath() + api.getType())))

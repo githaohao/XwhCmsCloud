@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xwh.article.entity.Post;
+import com.xwh.article.entity.PostTag;
+import com.xwh.article.mapper.PostTagMapper;
 import com.xwh.article.service.PostService;
 import com.xwh.article.service.param.PostParam;
 import com.xwh.core.controller.BaseController;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController extends BaseController {
 
     final PostService postService;
+    final PostTagMapper postTagMapper;
 
     /**
      * 新增笔记
@@ -65,8 +68,13 @@ public class PostController extends BaseController {
             query.eq("post_id", id);
             Post byQuery = postService.getOne(query);
             if (ObjectUtils.isEmpty(byQuery)) {
-                throw new FailException("这不是您的笔记");
+                throw new FailException("没有权限删除");
             }
+            // 关联的tagPost也需要删除
+            QueryWrapper<PostTag> queryPostTag = new QueryWrapper<>();
+            queryPostTag.eq("post_id", id);
+            postTagMapper.delete(queryPostTag);
+            //删除文章
             postService.removeById(id);
         }
         return success();

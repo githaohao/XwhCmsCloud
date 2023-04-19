@@ -71,18 +71,20 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
      */
     @Override
     public void savePostTags(String postId, String arr) {
+        //解决当数组只有一个的时候
         String[] tags = arr.substring(1, arr.length() - 1).split(",");
+        System.out.println(tags.length);
         // 如果 tags 为空就不保存
-        if ((tags.length - 1) == 0) {
-            return;
-        }
-        // 先删除该文章的所有标签JSON
-        postTagMapper.deleteByMap(Map.of("post_id", postId));
-        for (String tagId : tags) {
-            PostTag postTag = new PostTag();
-            postTag.setPostId(postId);
-            // 去除 arr 的引号
-            tagId = tagId.substring(1, tagId.length() - 1);
+            if ((tags.length == 0)) {
+                return;
+            }
+            // 先删除该文章的所有标签JSON
+            postTagMapper.deleteByMap(Map.of("post_id", postId));
+            for (String tagId : tags) {
+                PostTag postTag = new PostTag();
+                postTag.setPostId(postId);
+                // 去除 arr 的引号
+                tagId = tagId.substring(1, tagId.length() - 1);
             postTag.setTagId(tagId);
             postTagMapper.insert(postTag);
         }
@@ -97,7 +99,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     @Override
     public Page<Post> postByUser(PostParam param) {
         String userId = TokenUtil.getUserId();
-        return postMapper.postByUser(userId, param);
+        return postMapper.userListPage(userId, param);
     }
 
     /**
@@ -106,8 +108,18 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
      * @return
      */
     @Override
-    public Page<Post> getPost(PostParam postParam) {
+    public Post getPost(String postId) {
         // 判断是否是该用户的文章
-        return postMapper.postByUser(null, postParam);
+        return postMapper.getPost(postId);
+    }
+
+    /**
+     * 查询文章列表
+     * @param query
+     * @return
+     */
+    @Override
+    public Page<Post> listPage(PostParam postParam) {
+        return postMapper.listPage(postParam);
     }
 }

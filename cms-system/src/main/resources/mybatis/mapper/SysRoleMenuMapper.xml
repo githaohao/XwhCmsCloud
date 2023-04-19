@@ -5,7 +5,7 @@
     <select id="listByRoleId" resultType="com.xwh.system.entity.SysMenu">
         select a.*
         from sys_menu a
-                 LEFT JOIN sys_role_menu b ON (b.menu_id = a.menu_id)
+        LEFT JOIN sys_role_menu b ON (b.menu_id = a.menu_id)
         <where>
             <if test="menuType != null and menuType != ''">
                 and a.menu_type = #{menuType}

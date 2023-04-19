@@ -31,7 +31,7 @@ public class TagController extends BaseController {
     @ApiOperation("查询当前用户的所有标签")
     public Result TagListByUser(@RequestBody Tag vo) {
         List<Tag> tags = tagService.listByUser(vo);
-        return success().add(tags);
+        return success().add(propertyShow(tags, "tagId", "name", "color"));
     }
 
     @PostMapping("user")

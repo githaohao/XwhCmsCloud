@@ -21,9 +21,6 @@ public class PostParam extends Page<PostParam> {
     private String title;
 
     @ApiModelProperty(value = "标签id")
-    private String tagName;
-
-    @ApiModelProperty(value = "标签id")
     private String tagId;
 
     @ApiModelProperty(value = "状态")

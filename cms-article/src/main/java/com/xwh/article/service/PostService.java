@@ -36,9 +36,18 @@ public interface PostService extends IService<Post> {
     /**
      * 查询单个文章
      *
-     * @param param
+     * @param postId
      * @return
      */
-    Page<Post> getPost(PostParam param);
+    Post getPost(String postId);
 
+
+    /**
+     * 查询文章列表
+     *
+     * @param page
+     * @param query
+     * @return
+     */
+    Page<Post> listPage(PostParam postParam);
 }
