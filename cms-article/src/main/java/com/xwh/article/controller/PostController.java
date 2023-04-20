@@ -54,7 +54,7 @@ public class PostController extends BaseController {
     @ApiOperation("获取我的文章列表")
     @PostMapping("userlist")
     public Result userlist(@RequestBody PostParam param) {
-        Page<Post> postPageInfo = postService.postByUser(param);
+        Page<Post> postPageInfo = postService.userPostList(param);
         return success().add(postPageInfo);
     }
 

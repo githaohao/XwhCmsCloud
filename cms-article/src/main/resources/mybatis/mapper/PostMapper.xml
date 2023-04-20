@@ -4,8 +4,8 @@
 <mapper namespace="com.xwh.article.mapper.PostMapper">
 
     <select id="userListPage" resultType="com.xwh.article.entity.Post">
-        SELECT * FROM post_tag pt
-        LEFT JOIN post p ON pt.post_id = p.post_id
+        SELECT * FROM post p
+        LEFT JOIN post_tag pt ON pt.post_id = p.post_id
         LEFT JOIN tag t ON pt.tag_id = t.tag_id
         <where>
             <if test="userId != null">
@@ -26,7 +26,7 @@
         </where>
     </select>
 
-    <!--    查询所有文章关联标签查询  -->
+    <!--  查询所有文章关联标签查询  -->
     <select id="listPage" resultType="com.xwh.article.entity.Post">
         SELECT * FROM post_tag pt
         LEFT JOIN post p ON pt.post_id = p.post_id
@@ -46,11 +46,6 @@
             </if>
         </where>
     </select>
-    <select id="getPost" resultType="com.xwh.article.entity.Post">
-        SELECT * FROM post_tag pt
-        LEFT JOIN post p ON pt.post_id = p.post_id
-        LEFT JOIN tag t ON pt.tag_id = t.tag_id
-        WHERE p.post_id = #{postId}
-    </select>
+
 </mapper>
 

@@ -45,7 +45,7 @@ public class Result {
         Result result = new Result();
         result.setSuccess(success);
         result.setCode(code);
-        result.setMessage(Validator.isEmpty(message) ? "fail!" : message);
+        result.setMessage(Validator.isEmpty(message) ? (success ? "success!" : "fail!") : message);
         return result;
     }
 

@@ -3,7 +3,6 @@ package com.xwh.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xwh.system.entity.SysResource;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;

@@ -2,7 +2,6 @@ package com.xwh.article.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.xwh.core.entity.BaseTenantEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

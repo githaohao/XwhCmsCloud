@@ -75,16 +75,16 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         String[] tags = arr.substring(1, arr.length() - 1).split(",");
         System.out.println(tags.length);
         // 如果 tags 为空就不保存
-            if ((tags.length == 0)) {
-                return;
-            }
-            // 先删除该文章的所有标签JSON
-            postTagMapper.deleteByMap(Map.of("post_id", postId));
-            for (String tagId : tags) {
-                PostTag postTag = new PostTag();
-                postTag.setPostId(postId);
-                // 去除 arr 的引号
-                tagId = tagId.substring(1, tagId.length() - 1);
+        if ((tags.length == 0)) {
+            return;
+        }
+        // 先删除该文章的所有标签JSON
+        postTagMapper.deleteByMap(Map.of("post_id", postId));
+        for (String tagId : tags) {
+            PostTag postTag = new PostTag();
+            postTag.setPostId(postId);
+            // 去除 arr 的引号
+            tagId = tagId.substring(1, tagId.length() - 1);
             postTag.setTagId(tagId);
             postTagMapper.insert(postTag);
         }
@@ -93,28 +93,36 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
     /**
      * 查询当前用户的的文章列表
+     *
      * @param param
      * @return
      */
     @Override
-    public Page<Post> postByUser(PostParam param) {
+    public Page<Post> userPostList(PostParam param) {
         String userId = TokenUtil.getUserId();
         return postMapper.userListPage(userId, param);
     }
 
     /**
-     * 根据文章id查询文章
-     *
+     * 查询当前用户单个文章
      * @return
      */
-    @Override
-    public Post getPost(String postId) {
+    public Post getUserPost(String postId) {
         // 判断是否是该用户的文章
-        return postMapper.getPost(postId);
+        Post postById = getById(postId);
+        if (Objects.isNull(postById)) {
+            throw new FailException("文章不存在");
+        }
+        String userId = TokenUtil.getUserId();
+        if (!postById.getUserId().equals(userId)) {
+            throw new FailException("无权限查看");
+        }
+        return postById;
     }
 
     /**
      * 查询文章列表
+     *
      * @param query
      * @return
      */

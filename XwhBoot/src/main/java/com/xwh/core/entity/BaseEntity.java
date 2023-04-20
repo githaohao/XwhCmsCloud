@@ -16,7 +16,6 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Date;
 
 @Data

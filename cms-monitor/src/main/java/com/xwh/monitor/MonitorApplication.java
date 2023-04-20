@@ -1,16 +1,13 @@
 package com.xwh.monitor;
 
-import com.xwh.core.utils.FindClassesByPackage;
 import com.xwh.monitor.feign.SysResourceService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @author xwh

@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface PostTagMapper extends BaseMapper<PostTag> {
 
-    @Select("SELECT t.name FROM post_tag AS pt INNER JOIN tag AS t ON pt.tag_id = t.tag_id WHERE pt.post_id =#{postId}")
+    @Select("SELECT t.name,t.color,t.tag_id FROM post_tag AS pt INNER JOIN tag AS t ON pt.tag_id = t.tag_id WHERE pt.post_id =#{postId}")
     List<Tag> getTagsByPostId(@Param("postId") String postId);
 
 }

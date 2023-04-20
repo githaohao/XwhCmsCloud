@@ -6,7 +6,6 @@ import com.xwh.core.entity.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

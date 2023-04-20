@@ -21,11 +21,17 @@ public class BlogUserDto {
     @TableId(type = IdType.ASSIGN_ID)
     private String postId;
 
+    @ApiModelProperty(value = "文章作者")
+    private String author;
+
+    @ApiModelProperty(value = "作者头像")
+    private String avatar;
+
     @ApiModelProperty(value = "文章标题")
     private String title;
 
     @ApiModelProperty(value = "这篇文章的用户信息")
-    private Map<String,Object> user;
+    private Map<String, Object> user;
 
     @ApiModelProperty(value = "这篇文章的用户信息")
     private List<Tag> tagList;
@@ -93,7 +99,6 @@ public class BlogUserDto {
     @ApiModelProperty(value = "自定义描述")
     @Column(length = 1023)
     private String metaDescription;
-
 
     @ApiModelProperty(value = "内容字数")
     @ColumnDefault("0")

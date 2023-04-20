@@ -12,12 +12,14 @@ public interface PostService extends IService<Post> {
 
     /**
      * 保存当前用户的文章
+     *
      * @param vo
      */
     public void saveByUser(Post vo);
 
     /**
      * 保存文章的标签
+     *
      * @param postId
      * @param arr
      */
@@ -30,7 +32,7 @@ public interface PostService extends IService<Post> {
      * @param param
      * @return
      */
-    public Page<Post> postByUser(PostParam param);
+    public Page<Post> userPostList(PostParam param);
 
 
     /**
@@ -39,7 +41,7 @@ public interface PostService extends IService<Post> {
      * @param postId
      * @return
      */
-    Post getPost(String postId);
+    Post getUserPost(String postId);
 
 
     /**
@@ -50,4 +52,5 @@ public interface PostService extends IService<Post> {
      * @return
      */
     Page<Post> listPage(PostParam postParam);
+
 }

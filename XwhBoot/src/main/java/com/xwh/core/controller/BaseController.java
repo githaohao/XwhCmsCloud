@@ -7,17 +7,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.PropertyFilter;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.google.gson.*;
 import com.xwh.core.dto.Result;
 import com.xwh.core.exception.FailException;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author xiangwenhao
@@ -55,6 +56,37 @@ public class BaseController {
         return JSON.parse(s);
     }
 
+
+    public static <T> String filterFields(List<T> objects, Set<String> includedFields) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(objects.get(0).getClass(),
+                new FieldFilterSerializer(includedFields)).create();
+        return gson.toJson(objects);
+    }
+
+    static class FieldFilterSerializer implements JsonSerializer<Object> {
+        private final Set<String> includedFields;
+
+        public FieldFilterSerializer(Set<String> includedFields) {
+            this.includedFields = includedFields;
+        }
+        @Override
+        public JsonElement serialize(Object src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject obj = new JsonObject();
+            for (java.lang.reflect.Field f : src.getClass().getDeclaredFields()) {
+                if (!includedFields.contains(f.getName())) continue;
+                f.setAccessible(true);
+                try {
+                    Object value = f.get(src);
+                    obj.add(f.getName(), context.serialize(value));
+                } catch (IllegalAccessException e) {
+                    // ignore
+                }
+            }
+            return obj;
+        }
+    }
+
+
     public static Result success(String message) {
         return getResult(true, HttpStatus.HTTP_OK, message);
     }
@@ -75,7 +107,7 @@ public class BaseController {
         Result result = new Result();
         result.setSuccess(success);
         result.setCode(code);
-        result.setMessage(Validator.isEmpty(message) ? "fail!" : message);
+        result.setMessage(Validator.isEmpty(message) ? (success ? "success!" : "fail!") : message);
         return result;
     }
 
