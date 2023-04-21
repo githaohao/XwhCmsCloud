@@ -1,6 +1,8 @@
 package com.xwh.core.dto;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Validator;
+import cn.hutool.core.lang.hash.Hash;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,8 +52,9 @@ public class Result {
     }
 
     public Result add(String key, Object value) {
-        Map<String, Object> map = (Map<String, Object>) this.data;
+        Map<String, Object> map = BeanUtil.beanToMap(this.data);
         map.put(key, value);
+        this.setData(map);
         return this;
     }
 
