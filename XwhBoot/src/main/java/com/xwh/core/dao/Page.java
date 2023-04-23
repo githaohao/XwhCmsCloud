@@ -16,7 +16,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Page<T> extends com.baomidou.mybatisplus.extension.plugins.pagination.Page<T> {
     //	public static final int PAGE_INDEX = 1;
-//	public static final int PAGE_SIZE = 20;
+    //	public static final int PAGE_SIZE = 20;
     private static final long serialVersionUID = 1L;
 
     // 查询参数

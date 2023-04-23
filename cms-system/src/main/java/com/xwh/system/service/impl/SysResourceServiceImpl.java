@@ -49,12 +49,10 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
     @Override
     public void delGroupResource() {
         List<SysResource> sysResourceList = sysResourceMapper.groupByResource();
-        for (SysResource sysResource : sysResourceList) {
-            sysResourceMapper.deleteByMap(Map.of(
-                    "is_update", 1,
-                    "path", sysResource.getPath(),
-                    "type", sysResource.getType()));
-        }
+        sysResourceList.stream().<Map<String, Object>>map(sysResource -> Map.of(
+                "is_update", 1,
+                "path", sysResource.getPath(),
+                "type", sysResource.getType())).forEach(sysResourceMapper::deleteByMap);
     }
 
 
@@ -177,7 +175,6 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         if (exists) {
             throw new FailException("当前接口已存在");
         }
-
         // 保存界面
         return save(sysResource);
     }

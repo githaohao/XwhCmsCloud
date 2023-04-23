@@ -20,6 +20,7 @@ import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -31,240 +32,176 @@ public class FindClassesByPackage {
      * @param service 服务访问路径例: user
      * @return
      */
-    public static String findApiByPackage(String pack, String service, String servicveDesc){
-        Set<Class<?>> aClass = null;
-        try {
-            aClass = FindClassesByPackage.getClasses(pack);
+    public static String findApiByPackage(String pack, String service, String servicveDesc) {
+        List<String> list = new ArrayList<>();
+        // 获取包的名字 并进行替换
+        try (Stream<Class<?>> stream = FindClassesByPackage.getClasses(pack).stream()) {
+            stream.filter(clazz -> clazz.getSimpleName().contains("Controller"))
+                    .flatMap(e -> Arrays.stream(e.getMethods()))
+                    .filter(method -> method.isAnnotationPresent(RequestMapping.class)
+                            || method.isAnnotationPresent(PostMapping.class)
+                            || method.isAnnotationPresent(GetMapping.class)
+                            || method.isAnnotationPresent(PutMapping.class)
+                            || method.isAnnotationPresent(DeleteMapping.class))
+                    .forEach(method -> {
+                        JSONObject map = new JSONObject();
+                        ApiOperation[] apiOperation = method.getDeclaredAnnotationsByType(ApiOperation.class);
+                        for (ApiOperation annotation : apiOperation) {
+                            map.put("description", annotation.value());
+                        }
+
+                        RequestMapping requestMapping = method.getDeclaringClass().getAnnotation(RequestMapping.class);
+                        Api api = method.getDeclaringClass().getAnnotation(Api.class);
+                        StringBuilder path = new StringBuilder("/" + service);
+                        appendPath(path, requestMapping.value()[0]);
+
+                        map.put("controllerDescription", api.tags()[0]);
+                        map.put("service", service);
+                        map.put("serviceDesc", servicveDesc);
+                        map.put("controller", requestMapping.value()[0].replace("/", ""));
+                        if (method.isAnnotationPresent(PostMapping.class)) {
+                            PostMapping annotation = method.getAnnotation(PostMapping.class);
+                            map.put("type", "post");
+                            appendPath(path, annotation.value());
+                        } else if (method.isAnnotationPresent(GetMapping.class)) {
+                            GetMapping annotation = method.getAnnotation(GetMapping.class);
+                            map.put("type", "get");
+                            appendPath(path, annotation.value());
+                        } else if (method.isAnnotationPresent(PutMapping.class)) {
+                            PutMapping annotation = method.getAnnotation(PutMapping.class);
+                            map.put("type", "put");
+                            appendPath(path, annotation.value());
+                        } else if (method.isAnnotationPresent(DeleteMapping.class)) {
+                            DeleteMapping annotation = method.getAnnotation(DeleteMapping.class);
+                            map.put("type", "delete");
+                            appendPath(path, annotation.value());
+                        }
+
+                        Pattern p = Pattern.compile("\\{[a-zA-Z0-9]+\\}");
+                        Matcher m = p.matcher(path);
+                        while (m.find()) {
+                            String tmplStr = m.group();
+                            path = new StringBuilder(path.toString().replace(tmplStr, "%"));
+                        }
+                        map.put("path", path);
+                        list.add(map.toString());
+                    });
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Set<Class<?>> classController = aClass.stream().filter(clazz -> clazz.getSimpleName().contains("Controller")).collect(Collectors.toSet());
-        List<String> list = new LinkedList<>();
-        classController.forEach(e -> {
-            Method[] methods = e.getMethods();
-            for (Method method : methods) {
-                if (method.isAnnotationPresent(RequestMapping.class) || method.isAnnotationPresent(PostMapping.class)
-                        || method.isAnnotationPresent(GetMapping.class)
-                        || method.isAnnotationPresent(PutMapping.class)
-                        || method.isAnnotationPresent(DeleteMapping.class)) {
-                    // 假设每个方法上只有一个@ApiOperation注解
-                    JSONObject map = new JSONObject();
-                    ApiOperation[] apiOperation = method.getDeclaredAnnotationsByType(ApiOperation.class);
-                    for (ApiOperation annotation : apiOperation) {
-                        map.put("description",annotation.value());
-                    }
-
-                    RequestMapping requestMapping = e.getAnnotation(RequestMapping.class);
-                    Api api = e.getAnnotation(Api.class);
-                    StringBuilder path = new StringBuilder("/"+service);
-                    path.append(requestMapping.value()[0]);
-                    map.put("controllerDescription",api.tags()[0]);
-                    map.put("service",service);
-                    map.put("serviceDesc",servicveDesc);
-                    map.put("controller",requestMapping.value()[0].substring(1));
-
-                    if (method.isAnnotationPresent(RequestMapping.class)){
-
-                    } else if (method.isAnnotationPresent(PostMapping.class)){
-                        PostMapping annotation = method.getAnnotation(PostMapping.class);
-                        map.put("type", "post");
-                        String[] s = annotation.value();
-                        for (String s1 : s) {
-                            if (!s1.startsWith("/")){
-                                s1 = "/"+s1;
-                            }
-                            path.append(s1);
-                        }
-
-                    } else if (method.isAnnotationPresent(GetMapping.class)){
-                        GetMapping annotation = method.getAnnotation(GetMapping.class);
-                        map.put("type", "get");
-                        String[] s = annotation.value();
-                        for (String s1 : s) {
-                            if (!s1.startsWith("/")){
-                                s1 = "/"+s1;
-                            }
-                            path.append(s1);
-                        }
-                    } else if (method.isAnnotationPresent(PutMapping.class)){
-                        PutMapping annotation = method.getAnnotation(PutMapping.class);
-                        map.put("type", "put");
-                        String[] s = annotation.value();
-                        for (String s1 : s) {
-                            if (!s1.startsWith("/")){
-                                s1 = "/"+s1;
-                            }
-                            path.append(s1);
-                        }
-                    } else if (method.isAnnotationPresent(DeleteMapping.class)){
-                        DeleteMapping annotation = method.getAnnotation(DeleteMapping.class);
-                        map.put("type", "delete");
-                        String[] s = annotation.value();
-                        for (String s1 : s) {
-                            if (!s1.startsWith("/")){
-                                s1 = "/"+s1;
-                            }
-                            path.append(s1);
-                        }
-                    }
-
-                    Pattern p = Pattern.compile("\\{[a-zA-Z0-9]+\\}");
-                    Matcher m = p.matcher(path);
-                    while (m.find()) {
-                        String tmplStr = m.group();
-                        path = new StringBuilder(path.toString().replace(tmplStr, "%"));
-
-                    }
-                    map.put("path", path);
-                    list.add(String.valueOf(map));
-                }
-            }
-        });
+        System.out.println(list.toString());
         return list.toString();
     }
-    /**
-     * 从包package中获取所有的Class
-     *
-     * @param pack
-     * @return
-     */
-    public static Set<Class<?>> getClasses(String pack) throws IOException {
 
-        // 第一个class类的集合
-        Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
-        // 是否循环迭代
+    /**
+     * 拼接路径
+     *
+     * @param path       路径
+     * @param extensions 扩展
+     */
+    private static void appendPath(StringBuilder path, String... extensions) {
+        for (String extension : extensions) {
+            if (!extension.startsWith("/")) {
+                extension = "/" + extension;
+            }
+            path.append(extension);
+        }
+    }
+
+    /**
+     * 获取指定包下所有的类，包括子孙包中的类
+     *
+     * @param packageName 包名
+     * @return 所有的类
+     * @throws IOException 获取包中的类时可能会抛出IOException异常
+     */
+    public static Set<Class<?>> getClasses(String packageName) throws IOException {
+        // 存储所有类的集合
+        Set<Class<?>> classes = new LinkedHashSet<>();
+        // 是否递归处理子孙包中的类
         boolean recursive = true;
-        // 获取包的名字 并进行替换
-        String packageName = pack;
+        // 将包名转换为目录名
         String packageDirName = packageName.replace('.', '/');
-        // 定义一个枚举的集合 并进行循环来处理这个目录下的things
-        Enumeration<URL> dirs;
-        try {
-            dirs = Thread.currentThread().getContextClassLoader().getResources(
-                    packageDirName);
-            // 循环迭代下去
-            while (dirs.hasMoreElements()) {
-                // 获取下一个元素
-                URL url = dirs.nextElement();
-                // 得到协议的名称
-                String protocol = url.getProtocol();
-                // 如果是以文件的形式保存在服务器上
-                if ("file".equals(protocol)) {
-                    System.err.println("file类型的扫描");
-                    // 获取包的物理路径
-                    String filePath = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
-                    // 以文件的方式扫描整个包下的文件 并添加到集合中
-                    findAndAddClassesInPackageByFile(packageName, filePath,
-                            recursive, classes);
-                } else if ("jar".equals(protocol)) {
-                    // 如果是jar包文件
-                    // 定义一个JarFile
-                    System.err.println("jar类型的扫描");
-                    JarFile jar;
-                    try {
-                        // 获取jar
-                        jar = ((JarURLConnection) url.openConnection())
-                                .getJarFile();
-                        // 从此jar包 得到一个枚举类
-                        Enumeration<JarEntry> entries = jar.entries();
-                        // 同样的进行循环迭代
-                        while (entries.hasMoreElements()) {
-                            // 获取jar里的一个实体 可以是目录 和一些jar包里的其他文件 如META-INF等文件
-                            JarEntry entry = entries.nextElement();
-                            String name = entry.getName();
-                            // 如果是以/开头的
-                            if (name.charAt(0) == '/') {
-                                // 获取后面的字符串
-                                name = name.substring(1);
-                            }
-                            // 如果前半部分和定义的包名相同
-                            if (name.startsWith(packageDirName)) {
-                                int idx = name.lastIndexOf('/');
-                                // 如果以"/"结尾 是一个包
-                                if (idx != -1) {
-                                    // 获取包名 把"/"替换成"."
-                                    packageName = name.substring(0, idx)
-                                            .replace('/', '.');
-                                }
-                                // 如果可以迭代下去 并且是一个包
-                                if ((idx != -1) || recursive) {
-                                    // 如果是一个.class文件 而且不是目录
-                                    if (name.endsWith(".class")
-                                            && !entry.isDirectory()) {
-                                        // 去掉后面的".class" 获取真正的类名
-                                        String className = name.substring(
-                                                packageName.length() + 1, name
-                                                        .length() - 6);
-                                        try {
-                                            // 添加到classes
-                                            classes.add(Class
-                                                    .forName(packageName + '.'
-                                                            + className));
-                                        } catch (ClassNotFoundException e) {
-                                            // .error("添加用户自定义视图类错误 找不到此类的.class文件");
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            }
+        // 获取指定包下的所有资源（文件或者文件夹）
+        Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+        // 循环处理每个资源
+        while (dirs.hasMoreElements()) {
+            URL url = dirs.nextElement();
+            // 获取资源所采用的协议
+            String protocol = url.getProtocol();
+            if ("file".equals(protocol)) {
+                // 如果是以文件形式保存的，则直接处理该目录
+                System.err.println("file类型的扫描");
+                // 获取包的物理路径
+                String filePath = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
+                // 扫描该目录下所有的class文件，加入到集合中
+                findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
+            } else if ("jar".equals(protocol)) {
+                // 如果是以jar包的形式保存的，则需要从jar包中获取所有的类
+                System.err.println("jar类型的扫描");
+                JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
+                // 枚举jar包中所有的类文件
+                Enumeration<JarEntry> entries = jar.entries();
+                while (entries.hasMoreElements()) {
+                    // 获取jar包中的一个实体（文件或者目录）
+                    JarEntry entry = entries.nextElement();
+                    String name = entry.getName();
+                    if (name.charAt(0) == '/') {
+                        // 如果是以“/”开头，则去掉“/”
+                        name = name.substring(1);
+                    }
+                    // 如果该实体不是在指定的包下，则忽略
+                    if (!name.startsWith(packageDirName)) {
+                        continue;
+                    }
+                    int idx = name.lastIndexOf('/');
+                    // 如果实体本身是一个子目录，则更新当前的包名
+                    if (idx != -1) {
+                        packageName = name.substring(0, idx).replace('/', '.');
+                    }
+                    // 如果实体是一个类文件，则加入到集合中
+                    if (name.endsWith(".class") && !entry.isDirectory()) {
+                        String className = name.substring(idx + 1, name.length() - 6);
+                        try {
+                            classes.add(Thread.currentThread().getContextClassLoader().loadClass(packageName + '.' + className));
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
                         }
-                    } catch (IOException e) {
-                        // log.error("在扫描用户定义视图时从jar包获取文件出错");
-                        e.printStackTrace();
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
         return classes;
     }
 
     /**
-     * 以文件的形式来获取包下的所有Class
+     * 通过文件系统获取包下的所有类
      *
-     * @param packageName
-     * @param packagePath
-     * @param recursive
-     * @param classes
+     * @param packageName 包名
+     * @param packagePath 包路径
+     * @param recursive   是否递归
+     * @param classes     存储类的集合
      */
-    public static void findAndAddClassesInPackageByFile(String packageName,
-                                                        String packagePath, final boolean recursive, Set<Class<?>> classes) {
-        // 获取此包的目录 建立一个File
+    public static void findAndAddClassesInPackageByFile(String packageName, String packagePath, final boolean recursive, Set<Class<?>> classes) {
+        // 获取此包的目录，建立一个File对象
         File dir = new File(packagePath);
-        // 如果不存在或者 也不是目录就直接返回
+        // 如果不存在或者不是目录就直接返回
         if (!dir.exists() || !dir.isDirectory()) {
-            // log.warn("用户定义包名 " + packageName + " 下没有任何文件");
             return;
         }
-        // 如果存在 就获取包下的所有文件 包括目录
-        File[] dirfiles = dir.listFiles(new FileFilter() {
-                // 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
-                @Override
-                public boolean accept(File file) {
-                    return (recursive && file.isDirectory())
-                            || (file.getName().endsWith(".class"));
-                }
-        });
-        // 循环所有文件
-        for (File file : dirfiles) {
-            // 如果是目录 则继续扫描
+        // 获取目录下的所有文件和子目录，使用lambda表达式实现过滤条件
+        File[] dirFiles = dir.listFiles((file) -> (recursive && file.isDirectory()) || (file.getName().endsWith(".class")));
+        // 循环处理每个文件
+        for (File file : dirFiles) {
+            // 如果是目录，则继续递归处理该目录
             if (file.isDirectory()) {
-                findAndAddClassesInPackageByFile(packageName + "."
-                                + file.getName(), file.getAbsolutePath(), recursive,
-                        classes);
+                findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), recursive, classes);
             } else {
-                // 如果是java类文件 去掉后面的.class 只留下类名
-                String className = file.getName().substring(0,
-                        file.getName().length() - 6);
+                // 如果是类文件，则加入到集合中
+                String className = file.getName().substring(0, file.getName().length() - 6);
                 try {
-                    // 添加到集合中去
-                    //classes.add(Class.forName(packageName + '.' + className));
-                    //经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
                     classes.add(Thread.currentThread().getContextClassLoader().loadClass(packageName + '.' + className));
                 } catch (ClassNotFoundException e) {
-                    // log.error("添加用户自定义视图类错误 找不到此类的.class文件");
                     e.printStackTrace();
                 }
             }

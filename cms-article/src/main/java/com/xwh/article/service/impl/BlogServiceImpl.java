@@ -2,7 +2,7 @@ package com.xwh.article.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.xwh.article.annotation.TimeRange;
+import com.xwh.article.enums.TimeRange;
 import com.xwh.article.entity.Post;
 import com.xwh.article.entity.Tag;
 import com.xwh.article.entity.dto.BlogUserDto;
@@ -106,5 +106,26 @@ public class BlogServiceImpl implements BlogService {
     public List<Tag> getTopTag(Integer size, TimeRange timeRange) {
         QueryWrapper<Tag> visits = getTopItems(size, timeRange, "visits");
         return tagService.list(visits);
+    }
+
+    @Override
+    public void like(String postId) {
+        Post post = postService.getById(postId);
+        post.setLikes(post.getLikes() == null ? 1L : post.getLikes() + 1L);
+        postService.updateById(post);
+    }
+
+    @Override
+    public void unlike(String postId) {
+        Post post = postService.getById(postId);
+        // 如果点赞数为0就不减了
+        if (post.getLikes() == null) {
+            post.setLikes(0L);
+        } else if (post.getLikes() > 0) {
+            post.setLikes(post.getLikes() - 1L);
+        } else {
+            post.setLikes(0L);
+        }
+        postService.updateById(post);
     }
 }

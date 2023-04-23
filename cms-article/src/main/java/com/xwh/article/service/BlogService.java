@@ -1,6 +1,6 @@
 package com.xwh.article.service;
 
-import com.xwh.article.annotation.TimeRange;
+import com.xwh.article.enums.TimeRange;
 import com.xwh.article.entity.Post;
 import com.xwh.article.entity.Tag;
 import com.xwh.article.entity.dto.BlogUserDto;
@@ -26,4 +26,9 @@ public interface BlogService {
     List<Post> getTopBlog(Integer size, TimeRange time);
 
     List<Tag> getTopTag(Integer size, TimeRange time);
+
+    void like(String postId);
+
+    void unlike(String postId);
+
 }
