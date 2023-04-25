@@ -2,7 +2,7 @@ package com.xwh.core.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.xwh.core.dao.Page;
-import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;

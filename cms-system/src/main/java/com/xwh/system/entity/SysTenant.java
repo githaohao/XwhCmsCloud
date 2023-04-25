@@ -3,14 +3,14 @@ package com.xwh.system.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.xwh.core.entity.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -28,25 +28,25 @@ public class SysTenant extends BaseEntity implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     @Column(length = 20)
     String tenantId;
-    @ApiModelProperty(value = "租户名")
+    @Schema(name = "租户名")
     @Column(length = 100)
     String name;
-    @ApiModelProperty(value = "保留字段")
+    @Schema(name = "保留字段")
     @Column(length = 100)
     String isDomain;
     @Column(length = 200)
-    @ApiModelProperty(value = "租户介绍")
+    @Schema(name = "租户介绍")
     String description;
     @Column(length = 20)
-    @ApiModelProperty(value = "租户开关")
+    @Schema(name = "租户开关")
     Boolean enabled;
     @Column(length = 2)
-    @ApiModelProperty(value = "租户级别:租戶等級3-普通，5-重要，8-核心")
+    @Schema(name = "租户级别:租戶等級3-普通，5-重要，8-核心")
     Integer magnitude;
     @Column(length = 20)
-    @ApiModelProperty(value = "手机号")
+    @Schema(name = "手机号")
     String phone;
     @Column(length = 50)
-    @ApiModelProperty(value = "邮箱")
+    @Schema(name = "邮箱")
     String email;
 }

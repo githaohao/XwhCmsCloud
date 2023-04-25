@@ -3,8 +3,8 @@ package com.xwh.core.threads;
 import cn.hutool.extra.spring.SpringUtil;
 import com.xwh.core.dao.LogDao;
 import com.xwh.core.entity.SysLog;
+import jakarta.servlet.http.HttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @ClassName: SaveLogThread

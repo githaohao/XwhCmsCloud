@@ -2,14 +2,14 @@ package com.xwh.core.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.EntityListeners;
-import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
 public class BaseTenantEntity extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "租户ID", hidden = true)
+    @Schema(name = "租户ID", hidden = true)
     @Column(length = 30)
     @TableField("tenant_id")
     private String tenantId;

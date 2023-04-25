@@ -3,13 +3,14 @@ package com.xwh.article.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.xwh.core.entity.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+
 
 @Setter
 @Getter
@@ -23,7 +24,7 @@ public class Category extends BaseEntity {
 
 
 
-    @ApiModelProperty(value = "分类密码")
+    @Schema(name = "分类密码")
     private String password;
 
 

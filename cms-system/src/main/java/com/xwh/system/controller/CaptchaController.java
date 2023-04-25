@@ -9,8 +9,8 @@ import com.xwh.core.utils.RedisUtils;
 import com.xwh.system.properties.LoginCodeEnum;
 import com.xwh.system.properties.LoginProperties;
 import com.xwh.system.service.CaptchaService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/captcha")
 @RequiredArgsConstructor
-@Api(tags = "系统:验证码")
+@Tag(name = "系统:验证码")
 public class CaptchaController extends BaseController {
 
 	final LoginProperties loginProperties;
@@ -46,7 +46,7 @@ public class CaptchaController extends BaseController {
 	 * @return void
 	 * @throws
 	 */
-	@ApiOperation("获取验证码")
+	@Operation(summary = "获取验证码")
 	@GetMapping(value = "get")
 	public Result getCode() {
 		// 获取运算的结果
@@ -68,7 +68,7 @@ public class CaptchaController extends BaseController {
 	}
 
 	@GetMapping(value = "/verify")
-	@ApiOperation("验证验证码")
+	@Operation(summary = "验证验证码")
 	public Result verifyCode(String captcha,String captchaId) {
 		return captchaService.verifyCode(captcha,captchaId);
 	}

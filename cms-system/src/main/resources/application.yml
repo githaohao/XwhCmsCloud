@@ -1,0 +1,40 @@
+server:
+  port: 9999
+
+spring:
+  application:
+    name: cms-system
+  cloud:
+    gateway:
+      loadbalancer:
+        retry:
+          enabled: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+    nacos:
+      discovery:
+        server-addr: ${nacosUrl:nacos:8848}
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+  config:
+    import:
+      - optional:${spring.cloud.nacos.discovery.server-addr} # 配置中心地址
+      - optional:nacos:${spring.application.name}.yml
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    show-extensions: true
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/sys/**'
+      packages-to-scan: com.xwh.system
+  default-flat-param-object: false
+
+

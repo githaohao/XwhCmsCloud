@@ -1,7 +1,6 @@
 package com.xwh.system.entity.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,39 +10,40 @@ import lombok.ToString;
  *
  * @Date 2019/8/24 14:00
  */
-@ApiModel
+
 @Getter
 @Setter
 @ToString
+@Schema(description = "用户信息")
 public class AuthRequestVo {
 
 	/**
 	 * 用户名
 	 */
-	@ApiModelProperty("用户名")
+	@Schema(name = "用户名")
     private String username;
     /**
      * 密码
      */
-	@ApiModelProperty("密码")
+	@Schema(name = "密码")
     private String password;
 
 	/**
      * 验证码
      */
-	@ApiModelProperty("验证码")
+	@Schema(name = "验证码")
     private String captcha;
 
 	/**
 	 * 验证码id
 	 */
-	@ApiModelProperty("验证码id")
+	@Schema(name = "验证码id")
 	private String captchaId;
 
     /**
 	 * 登录类型:1.后台系统登录,2.admin
 	 */
-	@ApiModelProperty("登录类型:1.后台系统登录")
+	@Schema(name = "登录类型:1.后台系统登录")
     private String logintype;
 
 }

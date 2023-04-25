@@ -3,14 +3,14 @@ package com.xwh.system.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.xwh.core.entity.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
@@ -31,25 +31,25 @@ public class SysRole extends BaseEntity implements Serializable {
     /**
      * 角色名称
      */
-    @ApiModelProperty(value = "角色名称")
+    @Schema(name = "角色名称")
     @Column(length = 30)
     private String name;
     /**
      * 角色标识
      */
-    @ApiModelProperty(value = "角色标识")
+    @Schema(name = "角色标识")
     @Column(length = 20)
     private String role;
     /**
      * 角色描述
      */
-    @ApiModelProperty(value = "角色描述")
+    @Schema(name = "角色描述")
     @Column(length = 100)
     private String description;
     /**
      * 角色状态
      */
-    @ApiModelProperty(value = "角色状态")
+    @Schema(name = "角色状态")
     @Column(length = 1)
     private Boolean status;
 

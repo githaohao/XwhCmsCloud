@@ -4,14 +4,16 @@ import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson.JSON;
 import com.xwh.core.dto.Result;
 import com.xwh.core.utils.BlankUtils;
-import com.xwh.gatewey.feign.AuthService;
+import com.xwh.gatewey.feign.SystemUserService;
 import com.xwh.gatewey.properties.IgnoreUrlsProperties;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +24,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -36,7 +37,8 @@ public class AuthorizeGatewayFilter implements GlobalFilter, Ordered {
     public static final String UTF8 = "UTF-8";
 
     @Resource
-    private AuthService authService;
+    @Lazy
+    private SystemUserService systemService;
 
     @Autowired
     private IgnoreUrlsProperties ignoreUrlsProperties;
@@ -56,7 +58,7 @@ public class AuthorizeGatewayFilter implements GlobalFilter, Ordered {
             final String authorization = headers.getFirst(AUTHORIZE_TOKEN);
             if (authorization != null && authorization.startsWith("Bearer ")) {
                 String authToken = authorization.substring(7);
-                Result result = authService.checkToken(authToken);
+                Result result = systemService.checkToken(authToken);
                 int code = result.getCode();
                 // 认证（校验）成功的
                 if (code == HttpStatus.HTTP_OK) {
@@ -82,8 +84,8 @@ public class AuthorizeGatewayFilter implements GlobalFilter, Ordered {
                         return chain.filter(mutableExchange);
                     }
                     // 不是超级管理员查询授权
-                    String type = request.getMethodValue().toLowerCase();
-                    Result i = authService.checkAuthorize(userInfo, type, path);
+                    String type = request.getMethod().name().toLowerCase();
+                    Result i = systemService.checkAuthorize(userInfo, type, path);
 
                     if (i.getCode() == HttpStatus.HTTP_OK){
                         return chain.filter(mutableExchange);

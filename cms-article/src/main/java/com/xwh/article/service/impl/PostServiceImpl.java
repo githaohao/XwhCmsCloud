@@ -5,7 +5,7 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xwh.article.entity.Post;
 import com.xwh.article.entity.PostTag;
-import com.xwh.article.feign.SysUserService;
+import com.xwh.article.feign.SystemService;
 import com.xwh.article.mapper.PostMapper;
 import com.xwh.article.mapper.PostTagMapper;
 import com.xwh.article.mapper.TagMapper;
@@ -30,7 +30,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
     final PostTagMapper postTagMapper;
     final PostMapper postMapper;
-    final SysUserService sysUserService;
+    final SystemService systemService;
     final TagMapper tagMapper;
 
     /**
@@ -123,7 +123,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     /**
      * 查询文章列表
      *
-     * @param query
      * @return
      */
     @Override

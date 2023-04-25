@@ -7,10 +7,10 @@ import com.xwh.core.utils.*;
 import com.xwh.system.entity.SysLoginLog;
 import com.xwh.system.mapper.SysLoginLogMapper;
 import com.xwh.system.service.SysLoginLogService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.SocketException;
 import java.util.Date;
 
@@ -69,7 +69,6 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
     /**
      * 查询当前用户的登录日志
      *
-     * @param query
      * @return
      */
     @Override

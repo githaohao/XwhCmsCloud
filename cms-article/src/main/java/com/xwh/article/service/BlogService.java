@@ -1,9 +1,9 @@
 package com.xwh.article.service;
 
-import com.xwh.article.enums.TimeRange;
 import com.xwh.article.entity.Post;
-import com.xwh.article.entity.Tag;
+import com.xwh.article.entity.TagEntity;
 import com.xwh.article.entity.dto.BlogUserDto;
+import com.xwh.article.enums.TimeRange;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public interface BlogService {
 
     List<Post> getTopBlog(Integer size, TimeRange time);
 
-    List<Tag> getTopTag(Integer size, TimeRange time);
+    List<TagEntity> getTopTag(Integer size, TimeRange time);
 
     void like(String postId);
 

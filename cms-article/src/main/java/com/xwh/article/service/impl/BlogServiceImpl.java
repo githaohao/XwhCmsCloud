@@ -2,11 +2,11 @@ package com.xwh.article.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.xwh.article.enums.TimeRange;
 import com.xwh.article.entity.Post;
-import com.xwh.article.entity.Tag;
+import com.xwh.article.entity.TagEntity;
 import com.xwh.article.entity.dto.BlogUserDto;
-import com.xwh.article.feign.SysUserService;
+import com.xwh.article.enums.TimeRange;
+import com.xwh.article.feign.SystemService;
 import com.xwh.article.mapper.PostTagMapper;
 import com.xwh.article.service.BlogService;
 import com.xwh.article.service.PostService;
@@ -30,7 +30,7 @@ public class BlogServiceImpl implements BlogService {
 
     final PostService postService;
     final PostTagMapper postTagMapper;
-    final SysUserService sysUserService;
+    final SystemService systemService;
     final TagService tagService;
     final JdbcTemplate jdbcTemplate;
     final PlatformTransactionManager transactionManager;
@@ -42,7 +42,7 @@ public class BlogServiceImpl implements BlogService {
         Post post = postService.getById(postId);
         // 获取当前的用户昵称,如果为空就获取用户名
         String userId = post.getUserId();
-        Result user = sysUserService.findById(userId);
+        Result user = systemService.findById(userId);
         Map<String, Object> data = (Map<String, Object>) user.getData();
         String nickname = String.valueOf(data.get("nickname"));
         // 获取头像
@@ -62,7 +62,7 @@ public class BlogServiceImpl implements BlogService {
         // 设置头像
         blogUserDto.setAvatar(avatar);
         // 获得该文章的标签列表
-        List<Tag> tagsByPostId = postTagMapper.getTagsByPostId(blogUserDto.getPostId());
+        List<TagEntity> tagsByPostId = postTagMapper.getTagsByPostId(blogUserDto.getPostId());
         blogUserDto.setTagList(tagsByPostId);
         // 该文章的访问量 +1
         // 如果访问量为空就设置为1
@@ -103,8 +103,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public List<Tag> getTopTag(Integer size, TimeRange timeRange) {
-        QueryWrapper<Tag> visits = getTopItems(size, timeRange, "visits");
+    public List<TagEntity> getTopTag(Integer size, TimeRange timeRange) {
+        QueryWrapper<TagEntity> visits = getTopItems(size, timeRange, "visits");
         return tagService.list(visits);
     }
 

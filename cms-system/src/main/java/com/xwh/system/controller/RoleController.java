@@ -6,8 +6,8 @@ import com.xwh.system.entity.SysRole;
 import com.xwh.system.entity.SysRoleMenu;
 import com.xwh.system.service.SysRoleMenuService;
 import com.xwh.system.service.SysRoleService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +23,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/role")
-@Api(tags = "系统:角色管理")
+@Tag(name = "系统:角色管理")
 @Slf4j
 public class RoleController extends BaseController {
 
@@ -31,24 +31,24 @@ public class RoleController extends BaseController {
     final SysRoleMenuService sysRoleMenuService;
 
     @GetMapping()
-    @ApiOperation(value = "获取角色列表")
+    @Operation(summary = "获取角色列表")
     public Result list() {
         List<SysRole> list = sysRoleService.list();
         return success().add(list);
     }
 
     @PostMapping()
-    @ApiOperation(value = "添加角色")
+    @Operation(summary = "添加角色")
     public Result add(@RequestBody SysRole sysRole) {
         sysRoleService.save(sysRole);
         return success();
     }
 
     @PutMapping
-    @ApiOperation(value = "修改角色")
+    @Operation(summary = "修改角色")
     public Result update(@RequestBody SysRole sysRole) {
         SysRole role = sysRoleService.getById(sysRole.getRoleId());
-        if (!role.getRoleId().equals(sysRole.getRoleId())){
+        if (!role.getRoleId().equals(sysRole.getRoleId())) {
             return fail("权限表示不可修改");
         }
         sysRoleService.updateById(sysRole);
@@ -56,7 +56,7 @@ public class RoleController extends BaseController {
     }
 
     @DeleteMapping()
-    @ApiOperation(value = "删除角色")
+    @Operation(summary = "删除角色")
     public Result delete(@RequestBody String id) {
         sysRoleService.delete(id);
         return success();
@@ -64,8 +64,8 @@ public class RoleController extends BaseController {
 
 
     @PostMapping("/roleIdSaveMenus/{roleId}")
-    @ApiOperation(value = "通过当前角色id授权菜单权限")
-    public Result roleIdSaveMenus(@PathVariable String roleId, @RequestBody String[] menuIds){
+    @Operation(summary = "通过当前角色id授权菜单权限")
+    public Result roleIdSaveMenus(@PathVariable String roleId, @RequestBody String[] menuIds) {
         // 删除该角色的所有菜单
         sysRoleMenuService.removeByMap(Map.of("role_id", roleId));
         SysRoleMenu sysRoleMenu = new SysRoleMenu();

@@ -1,15 +1,13 @@
 package com.xwh.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -19,7 +17,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -45,17 +42,17 @@ public class FindClassesByPackage {
                             || method.isAnnotationPresent(DeleteMapping.class))
                     .forEach(method -> {
                         JSONObject map = new JSONObject();
-                        ApiOperation[] apiOperation = method.getDeclaredAnnotationsByType(ApiOperation.class);
-                        for (ApiOperation annotation : apiOperation) {
-                            map.put("description", annotation.value());
+                        Operation[] apiOperation = method.getDeclaredAnnotationsByType(Operation.class);
+                        for (Operation annotation : apiOperation) {
+                            map.put("description", annotation.summary());
                         }
 
                         RequestMapping requestMapping = method.getDeclaringClass().getAnnotation(RequestMapping.class);
-                        Api api = method.getDeclaringClass().getAnnotation(Api.class);
+                        Tag tag = method.getDeclaringClass().getAnnotation(Tag.class);
                         StringBuilder path = new StringBuilder("/" + service);
                         appendPath(path, requestMapping.value()[0]);
 
-                        map.put("controllerDescription", api.tags()[0]);
+                        map.put("controllerDescription", tag.name());
                         map.put("service", service);
                         map.put("serviceDesc", servicveDesc);
                         map.put("controller", requestMapping.value()[0].replace("/", ""));

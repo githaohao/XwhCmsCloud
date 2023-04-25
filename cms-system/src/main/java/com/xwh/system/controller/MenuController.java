@@ -8,9 +8,9 @@ import com.xwh.system.entity.SysUser;
 import com.xwh.system.service.SysMenuService;
 import com.xwh.system.service.SysRoleMenuService;
 import com.xwh.system.service.SysRoleService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/menu")
-@Api(tags = "系统:菜单管理")
+@Tag(name = "系统:菜单管理")
 @RequiredArgsConstructor
 public class MenuController extends BaseController {
 
@@ -35,7 +35,7 @@ public class MenuController extends BaseController {
     final SysRoleMenuService sysRoleMenuService;
     final SysRoleService sysRoleService;
 
-    @ApiOperation("通过关键字模糊查询折叠菜单列表")
+   @Operation(summary = "通过关键字模糊查询折叠菜单列表")
     @PostMapping("/search")
     public Result search(@RequestBody SysMenu menu) {
         List<SysMenu> search = sysMenuService.search(menu);
@@ -43,7 +43,7 @@ public class MenuController extends BaseController {
         return success().add(propertyDel(trees, "meta"));
     }
 
-    @ApiOperation("添加/修改 单个菜单")
+   @Operation(summary = "添加/修改 单个菜单")
     @PostMapping()
     public Result save(@RequestBody SysMenu sysMenu) {
         if (sysMenu.getMenuId() == null) {
@@ -54,31 +54,31 @@ public class MenuController extends BaseController {
         return success().add(sysMenu);
     }
 
-    @ApiOperation("通过 id 获取单个菜单")
+   @Operation(summary = "通过 id 获取单个菜单")
     @GetMapping("/{id}")
     public Result findById(@PathVariable String id) {
         SysMenu menu = sysMenuService.getById(id);
         return success().add(menu);
     }
 
-    @ApiOperation("通过 id 删除菜单")
+   @Operation(summary = "通过 id 删除菜单")
     @DeleteMapping("{id}")
     public Result del(@PathVariable String id) {
         sysMenuService.removeById(id);
         return success();
     }
 
-    @ApiOperation("通过id获取可选上级菜单列表")
+   @Operation(summary = "通过id获取可选上级菜单列表")
     @GetMapping("superior/{id}")
-    public Result superior(@ApiParam("id 为 0 时候获取所有") @PathVariable String id) {
+    public Result superior(@Parameter(description = "id 为 0 时候获取所有") @PathVariable String id) {
         List<SysMenu> superior = sysMenuService.getSuperior(id, new ArrayList<>());
         List<Tree<String>> trees = sysMenuService.buildSelectData(superior);
         return success().add(trees);
     }
 
     @GetMapping("role/{roleId}")
-    @ApiOperation(value = "通过角色id获取所有的折叠菜单id")
-    public Result getMenuIdByRoleId(@ApiParam(value = "请输入角色id") @PathVariable("roleId") String roleId) {
+   @Operation(summary  = "通过角色id获取所有的折叠菜单id")
+    public Result getMenuIdByRoleId(@Parameter(description = "请输入角色id") @PathVariable("roleId") String roleId) {
         List<SysMenu> sysMenus = sysRoleMenuService.menuByRoleId(new SysUser(), new String[]{roleId});
         List<String> collect = sysMenus.stream().map(SysMenu::getMenuId).collect(Collectors.toList());
         return success().add(collect);

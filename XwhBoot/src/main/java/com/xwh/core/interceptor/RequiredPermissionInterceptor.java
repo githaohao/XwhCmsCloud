@@ -5,12 +5,12 @@ import com.xwh.core.utils.BlankUtils;
 import com.xwh.core.utils.RedisUtils;
 import com.xwh.core.utils.TokenUtil;
 import com.xwh.core.utils.WriterUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,9 +18,9 @@ import java.util.Set;
  * @ClassName: SecurityInterceptor
  * @Description: 按钮权限拦截
  */
-public class RequiredPermissionInterceptor extends HandlerInterceptorAdapter {
+public class RequiredPermissionInterceptor implements AsyncHandlerInterceptor {
 
-	@Autowired
+	@Resource
 	RedisUtils redis;
 
 	@Override

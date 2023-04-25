@@ -1,0 +1,23 @@
+server:
+    port: 9999
+
+spring:
+    application:
+        name: cms-article
+    cloud:
+        gateway:
+            discovery:
+                locator:
+                    enabled: true
+                    lower-case-service-id: true
+        nacos:
+            discovery:
+                server-addr: ${nacosUrl:nacos:8848}
+            config:
+                server-addr: ${spring.cloud.nacos.discovery.server-addr}
+    config:
+        import:
+            - optional:${spring.cloud.nacos.discovery.server-addr} # 配置中心地址
+            - optional:nacos:${spring.application.name}.yml
+
+

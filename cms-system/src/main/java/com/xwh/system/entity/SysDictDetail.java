@@ -3,14 +3,14 @@ package com.xwh.system.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.xwh.core.entity.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
@@ -24,22 +24,22 @@ public class SysDictDetail extends BaseEntity implements Serializable {
     @Column(length = 20)
     private String detailId;
 
-    @ApiModelProperty(value = "关联字典Id", hidden = true)
+    @Schema(name = "关联字典Id", hidden = true)
     private String dictId;
 
-    @ApiModelProperty(value = "字典标签")
+    @Schema(name = "字典标签")
     @Column(length = 50)
     private String label;
 
-    @ApiModelProperty(value = "字典值")
+    @Schema(name = "字典值")
     @Column(length = 50)
     private String value;
 
-    @ApiModelProperty(value = "排序")
+    @Schema(name = "排序")
     @Column(length = 5)
     private Integer dictSort = 999;
 
-    @ApiModelProperty(value = "状态")
+    @Schema(name = "状态")
     @Column(length = 1)
     Boolean status;
 }

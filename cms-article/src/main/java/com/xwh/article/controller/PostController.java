@@ -14,8 +14,8 @@ import com.xwh.core.dto.Result;
 import com.xwh.core.exception.FailException;
 import com.xwh.core.utils.StringUtil;
 import com.xwh.core.utils.TokenUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/post")
-@Api(tags = "文章:文章管理")
+@Tag(name = "文章:文章管理")
 @Slf4j
 @RequiredArgsConstructor
 public class PostController extends BaseController {
@@ -41,7 +41,7 @@ public class PostController extends BaseController {
      * @return
      */
     @PostMapping("user")
-    @ApiOperation("保存我的文章")
+   @Operation(summary = "保存我的文章")
     public Result saveByUser(@RequestBody JSONObject data) {
         Post post = JSON.toJavaObject(data, Post.class);
         if (StringUtil.isEmpty(post.getTitle())) {
@@ -51,14 +51,14 @@ public class PostController extends BaseController {
         return success();
     }
 
-    @ApiOperation("获取我的文章列表")
+   @Operation(summary = "获取我的文章列表")
     @PostMapping("userlist")
     public Result userlist(@RequestBody PostParam param) {
         Page<Post> postPageInfo = postService.userPostList(param);
         return success().add(postPageInfo);
     }
 
-    @ApiOperation("删除根据id删除")
+   @Operation(summary = "删除根据id删除")
     @DeleteMapping("user")
     public Result delByIds(@RequestBody String[] ids) {
         String userId = TokenUtil.getUserId();

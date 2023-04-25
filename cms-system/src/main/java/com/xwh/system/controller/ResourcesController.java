@@ -6,8 +6,8 @@ import com.xwh.core.dto.Result;
 import com.xwh.system.entity.SysResource;
 import com.xwh.system.service.SysResourceService;
 import com.xwh.system.service.SysRoleResourceService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/resource")
-@Api(tags = "系统:接口授权")
+@Tag(name = "系统:接口授权")
 @Slf4j
 @RequiredArgsConstructor
 public class ResourcesController extends BaseController {
@@ -39,7 +39,7 @@ public class ResourcesController extends BaseController {
      *
      * @return
      */
-    @ApiOperation("通过角色id查询所有的接口授权id")
+    @Operation(description = "通过角色id查询所有的接口授权id")
     @GetMapping("{roleId}")
     public Result resourceIdsByRoleId(@PathVariable String roleId) {
         Set<String> strings = sysResourceService.resourceIdsByRoleId(roleId);
@@ -51,7 +51,7 @@ public class ResourcesController extends BaseController {
      * @return
      */
     @PostMapping("add")
-    @ApiOperation("新增单个接口")
+    @Operation(description = "新增单个接口")
     public Result add(@RequestBody SysResource sysResource){
         sysResourceService.add(sysResource);
         return success();
@@ -63,7 +63,7 @@ public class ResourcesController extends BaseController {
      * @param roleId
      * @return
      */
-    @ApiOperation("保存该角色的所有授权")
+    @Operation(description = "保存该角色的所有授权")
     @PostMapping("{roleId}")
     public Result saveResourceByRoleId(@PathVariable String roleId, @RequestBody String[] resourceIds) {
         sysRoleResourceService.saveUpdateRoleResource(roleId,resourceIds);
@@ -72,7 +72,7 @@ public class ResourcesController extends BaseController {
 
 
     @GetMapping("service")
-    @ApiOperation("查询接口的 service 列表")
+    @Operation(description = "查询接口的 service 列表")
     public Result groupService() {
         List<Map<String, Object>> maps = sysResourceService.groupService();
         return success().add(maps);
@@ -80,7 +80,7 @@ public class ResourcesController extends BaseController {
 
 
     @GetMapping("list/{service}/{controller}")
-    @ApiOperation("查询当前服务所有的接口")
+    @Operation(description = "查询当前服务所有的接口")
     public Result list(@PathVariable String service, @PathVariable String controller) {
         QueryWrapper<SysResource> query = new QueryWrapper<>();
         query.eq("service", service);
@@ -91,7 +91,7 @@ public class ResourcesController extends BaseController {
 
 
     @PostMapping("addAll/{service}")
-    @ApiOperation("新增/更新 该服务所有的的接口")
+    @Operation(description = "新增/更新 该服务所有的的接口")
     public Result addAll(@PathVariable String service, @RequestBody String apiList) {
         sysResourceService.saveResourceIsUpdate(apiList, service);
         return success();

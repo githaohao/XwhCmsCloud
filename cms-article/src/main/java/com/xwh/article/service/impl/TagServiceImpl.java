@@ -3,7 +3,7 @@ package com.xwh.article.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xwh.article.entity.PostTag;
-import com.xwh.article.entity.Tag;
+import com.xwh.article.entity.TagEntity;
 import com.xwh.article.entity.TagUser;
 import com.xwh.article.mapper.PostTagMapper;
 import com.xwh.article.mapper.TagMapper;
@@ -22,7 +22,7 @@ import java.util.List;
  **/
 @Service
 @RequiredArgsConstructor
-public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagService {
+public class TagServiceImpl extends ServiceImpl<TagMapper, TagEntity> implements TagService {
 
     final TagMapper tagMapper;
     final TagUserMapper tagUserMapper;
@@ -33,7 +33,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
      *
      * @return
      */
-    public List<Tag> listByUser(Tag vo) {
+    public List<TagEntity> listByUser(TagEntity vo) {
         String userId = TokenUtil.getUserId();
         return tagMapper.tagListByUser(userId, vo);
     }
@@ -43,9 +43,9 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
      *
      * @return
      */
-    public Tag saveTag(Tag tag) {
+    public TagEntity saveTag(TagEntity tag) {
         // 判断当前 标签是否已经存在
-        QueryWrapper<Tag> query = new QueryWrapper<>();
+        QueryWrapper<TagEntity> query = new QueryWrapper<>();
         query.eq("name", tag.getName());
         long count = count(query);
         if (count > 0) {
@@ -86,13 +86,13 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     }
 
     @Override
-    public boolean editUser(String userId, Tag tag) {
+    public boolean editUser(String userId, TagEntity tag) {
         QueryWrapper<TagUser> query = new QueryWrapper<>();
         boolean byQuery = tagUserMapper.exists(query.eq("user_id", userId).eq("tag_id", tag.getTagId()));
         if (!byQuery) {
             throw new FailException("这不是您的文章");
         }
-        Tag byId = tagMapper.selectById((tag.getTagId()));
+        TagEntity byId = tagMapper.selectById((tag.getTagId()));
         if (!byId.getName().equals(tag.getName())) {
             //如果修改当前的标签名
             throw new FailException("标签名不允许被修改");
@@ -102,10 +102,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     }
 
     @Override
-    public boolean saveByUser(String userId, Tag tag) {
+    public boolean saveByUser(String userId, TagEntity tag) {
         //当前标签是否存在
-        QueryWrapper<Tag> query = new QueryWrapper<>();
-        Tag tagName = getOne(query.eq("name", tag.getName()));
+        QueryWrapper<TagEntity> query = new QueryWrapper<>();
+        TagEntity tagName = getOne(query.eq("name", tag.getName()));
         // 如果为空创建新的标签
         if (ObjectUtils.isEmpty(tagName)) {
             tagName = saveTag(tag);

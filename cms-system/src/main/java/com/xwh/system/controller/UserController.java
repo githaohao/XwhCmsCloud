@@ -12,8 +12,8 @@ import com.xwh.core.utils.TokenUtil;
 import com.xwh.system.entity.SysUser;
 import com.xwh.system.service.SysUserRoleService;
 import com.xwh.system.service.SysUserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
-@Api(tags = "系统:用户管理")
+@Tag(name = "系统:用户管理")
 @Slf4j
 public class UserController extends BaseController {
 
@@ -36,7 +36,7 @@ public class UserController extends BaseController {
     final SysUserRoleService sysUserRoleService;
 
 
-    @ApiOperation(value = "分页模糊查询所有用户")
+   @Operation(summary  = "分页模糊查询所有用户")
     @PostMapping("/search/{index}/{size}")
     public Result search(@PathVariable Long index, @PathVariable Long size, @RequestBody SysUser sysUser) {
         Page<SysUser> userPage = new Page<>(index, size);
@@ -47,7 +47,7 @@ public class UserController extends BaseController {
     }
 
 
-    @ApiOperation(value = "通过 id 删除用户")
+   @Operation(summary  = "通过 id 删除用户")
     @DeleteMapping()
     public Result del(@RequestBody String[] ids) {
         sysUserService.delByIds(ids);
@@ -58,7 +58,7 @@ public class UserController extends BaseController {
      * 创建系统_用户
      */
     @PostMapping()
-    @ApiOperation(value = "创建用户")
+   @Operation(summary = "创建用户")
     public Result add(@RequestBody JSONObject data) {
         SysUser sysUser = JSON.toJavaObject(data, SysUser.class);
         try {
@@ -85,7 +85,7 @@ public class UserController extends BaseController {
      * 修改系统_用户
      */
     @PutMapping()
-    @ApiOperation(value = "修改用户")
+   @Operation(summary = "修改用户")
     public Result update(@RequestBody JSONObject data) {
         SysUser sysUser = JSON.toJavaObject(data, SysUser.class);
         if (StringUtils.isNotBlank(sysUser.getPassword())) {
@@ -113,7 +113,7 @@ public class UserController extends BaseController {
      * @date 2020年1月16日 上午10:52:49
      */
     @PutMapping("/updatePwd")
-    @ApiOperation(value = "用户修改密码")
+   @Operation(summary = "用户修改密码")
     public Result updatePwd(@RequestBody JSONObject data) {
         String pwd = data.getString("pwd");
         String newpwd = data.getString("newpwd");
@@ -148,7 +148,7 @@ public class UserController extends BaseController {
 
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "通过id获取单个用户的信息(密码除外)")
+   @Operation(summary = "通过id获取单个用户的信息(密码除外)")
     public Result findById(@PathVariable String id) {
         return success().add(propertyDel(sysUserService.getById(id),"password"));
     }

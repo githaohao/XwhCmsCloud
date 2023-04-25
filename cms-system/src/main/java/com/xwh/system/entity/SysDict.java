@@ -3,15 +3,15 @@ package com.xwh.system.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.xwh.core.entity.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 @Entity
@@ -26,15 +26,15 @@ public class SysDict extends BaseEntity implements Serializable {
     private String dictId;
 
     @NotBlank
-    @ApiModelProperty(value = "名称")
+    @Schema(name = "名称")
     @Column(length = 50)
     private String name;
 
-    @ApiModelProperty(value = "描述")
+    @Schema(name = "描述")
     @Column(length = 100)
     private String description;
 
-    @ApiModelProperty(value = "状态")
+    @Schema(name = "状态")
     @Column(length = 1)
     Boolean status;
 }

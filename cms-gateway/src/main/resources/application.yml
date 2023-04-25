@@ -1,0 +1,21 @@
+server:
+  port: 9999
+spring:
+  application:
+    name: cms-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 开启从注册中心动态创建路由的功能，利用微服务名进行路由
+    nacos:
+      discovery:
+        server-addr: ${nacosUrl:nacos:8848}
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        file-extension: yaml
+        group: DEFAULT_GROUP
+  config:
+    import:
+      - optional:${spring.cloud.nacos.discovery.server-addr} # 配置中心地址
+      - optional:nacos:${spring.application.name}.yml

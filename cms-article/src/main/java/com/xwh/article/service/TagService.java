@@ -1,28 +1,28 @@
 package com.xwh.article.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.xwh.article.entity.Tag;
+import com.xwh.article.entity.TagEntity;
 
 import java.util.List;
 
 /**
  * @author xwh
  **/
-public interface  TagService extends IService<Tag> {
+public interface  TagService extends IService<TagEntity> {
 
     /**
      * 查询当前用户的所有标签
      *
      * @return
      */
-    public List<Tag> listByUser(Tag vo);
+    public List<TagEntity> listByUser(TagEntity vo);
 
     /**
      * 保存标签
      *
      * @return
      */
-    public Tag saveTag(Tag tag);
+    public TagEntity saveTag(TagEntity tag);
 
     /**
      * 删除该角色的标签
@@ -37,7 +37,7 @@ public interface  TagService extends IService<Tag> {
      * @param tag
      * @return
      */
-    boolean editUser(String userId, Tag tag);
+    boolean editUser(String userId, TagEntity tag);
 
     /**
      * 保存当前用户的标签
@@ -45,6 +45,6 @@ public interface  TagService extends IService<Tag> {
      * @param tag
      * @return
      */
-    boolean saveByUser(String userId, Tag tag);
+    boolean saveByUser(String userId, TagEntity tag);
 
 }

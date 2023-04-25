@@ -14,8 +14,8 @@ import com.xwh.system.service.SysRoleResourceService;
 import com.xwh.system.service.SysUserRoleService;
 import com.xwh.system.service.SysUserService;
 import com.xwh.system.validator.impl.DbValidator;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-@Api(tags = "系统:系统授权")
+@Tag(name = "系统:系统授权")
 @Slf4j
 public class LoginController extends BaseController {
 
@@ -45,7 +45,7 @@ public class LoginController extends BaseController {
 
 
     @PostMapping("login")
-    @ApiOperation(value = "登录验证")
+    @Operation(summary = "登录验证")
     public Result auth(@RequestBody AuthRequestVo authRequestVo) {
         try {
             SysUser user = reqValidator.validate(authRequestVo);
@@ -53,7 +53,7 @@ public class LoginController extends BaseController {
             // 验证成功
             String loginType = authRequestVo.getLogintype();
             String userName = authRequestVo.getUsername();
-            String userInfoStr = user.getUserId() + ";;" + userName + ";;" + loginType + ";;" + user.getIsAdmin()+";;"+user.getTenantId();
+            String userInfoStr = user.getUserId() + ";;" + userName + ";;" + loginType + ";;" + user.getIsAdmin() + ";;" + user.getTenantId();
             final String token = jwtTokenUtil.generateToken(userInfoStr, randomKey);
             // 存储到redis或者db中
             tokenManager.createRelationship(authRequestVo.getUsername(), token);
@@ -66,7 +66,7 @@ public class LoginController extends BaseController {
     }
 
 
-    @ApiOperation("获取当前用户信息")
+    @Operation(summary = "获取当前用户信息")
     @PostMapping("/info")
     public Result userInfo() {
         String token = TokenUtil.getToken();
@@ -82,7 +82,7 @@ public class LoginController extends BaseController {
     }
 
 
-    @ApiOperation("用户角色的权限查询")
+    @Operation(summary = "用户角色的权限查询")
     @PostMapping("/checkAuthorize")
     public Result checkAuthorize(String userInfoStr, String type, String path) {
         String userId = "";
@@ -102,8 +102,7 @@ public class LoginController extends BaseController {
     }
 
 
-
-    @ApiOperation(value = "权限验证")
+    @Operation(summary = "权限验证")
     @PostMapping("/checkToken")
     public Result checkToken(String authToken) {
         String msg = "token未进行认证！";
@@ -140,7 +139,7 @@ public class LoginController extends BaseController {
      * @return
      */
     @PostMapping(value = "/logout")
-    @ApiOperation(value = "用户注销", notes = "用户注销")
+    @Operation(summary = "用户注销", description = "用户注销")
     public Result logout() {
         // TODO JWT不能从服务端destroy token， logout目前只能在客户端的cookie 或
         // localStorage/sessionStorage remove token

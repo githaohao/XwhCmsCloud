@@ -2,7 +2,6 @@ package com.xwh.core.dto;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Validator;
-import cn.hutool.core.lang.hash.Hash;
 import lombok.Getter;
 import lombok.Setter;
 
