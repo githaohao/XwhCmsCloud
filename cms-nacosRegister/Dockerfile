@@ -1,4 +1,4 @@
-FROM moxm/java:11-full
+FROM moxm/java:1.8-full
 
 RUN mkdir -p /cms-nacosregister
 
