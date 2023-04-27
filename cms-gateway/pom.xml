@@ -32,11 +32,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>nexus-maven</id>
-            <name>nexus-maven</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
     </repositories>
 
 
@@ -111,7 +106,10 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

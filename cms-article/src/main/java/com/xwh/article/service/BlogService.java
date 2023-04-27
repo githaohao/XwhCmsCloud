@@ -12,7 +12,6 @@ import java.util.List;
  * @author xwh
  **/
 
-@Service
 public interface BlogService {
 
     /**

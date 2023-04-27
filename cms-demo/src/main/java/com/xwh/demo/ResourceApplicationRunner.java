@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.core.config.Order;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Component
@@ -15,6 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResourceApplicationRunner implements ApplicationRunner {
 
+    @Resource
+    @Lazy
     final SysResourceService sysResourceService;
     final String service = "article";
     final String serviceTitle = "demo";

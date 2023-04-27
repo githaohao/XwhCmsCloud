@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author xwh
  **/
 @FeignClient(name = "cms-system", fallback = SystemServiceFallbackImpl.class)
-public interface SystemService {
+public interface SystemUserService {
 
 
     @GetMapping("/user/{id}")

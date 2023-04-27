@@ -8,6 +8,9 @@ spring:
       discovery:
         locator:
           enabled: true # 开启从注册中心动态创建路由的功能，利用微服务名进行路由
+    loadbalancer:
+      nacos:
+        enabled: true
     nacos:
       discovery:
         server-addr: ${nacosUrl:nacos:8848}

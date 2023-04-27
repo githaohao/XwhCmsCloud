@@ -5,7 +5,7 @@ import com.xwh.article.entity.Post;
 import com.xwh.article.entity.TagEntity;
 import com.xwh.article.entity.dto.BlogUserDto;
 import com.xwh.article.enums.TimeRange;
-import com.xwh.article.feign.SystemService;
+import com.xwh.article.feign.SystemUserService;
 import com.xwh.article.service.BlogService;
 import com.xwh.article.service.PostService;
 import com.xwh.article.service.TagService;
@@ -34,13 +34,13 @@ public class BlogController extends BaseController {
     final PostService postService;
     final BlogService blogService;
     final TagService tagService;
-    final SystemService systemService;
+    final SystemUserService systemUserService;
 
 
     @Operation(summary = "HttpExchange 调用测试")
     @GetMapping("test")
     public Result test() {
-        return success().add( systemService.findById("12121"));
+        return success().add( systemUserService.findById("12121"));
     }
 
     /**

@@ -6,7 +6,7 @@ import com.xwh.article.entity.Post;
 import com.xwh.article.entity.TagEntity;
 import com.xwh.article.entity.dto.BlogUserDto;
 import com.xwh.article.enums.TimeRange;
-import com.xwh.article.feign.SystemService;
+import com.xwh.article.feign.SystemUserService;
 import com.xwh.article.mapper.PostTagMapper;
 import com.xwh.article.service.BlogService;
 import com.xwh.article.service.PostService;
@@ -30,7 +30,7 @@ public class BlogServiceImpl implements BlogService {
 
     final PostService postService;
     final PostTagMapper postTagMapper;
-    final SystemService systemService;
+    final SystemUserService systemUserService;
     final TagService tagService;
     final JdbcTemplate jdbcTemplate;
     final PlatformTransactionManager transactionManager;
@@ -42,7 +42,7 @@ public class BlogServiceImpl implements BlogService {
         Post post = postService.getById(postId);
         // 获取当前的用户昵称,如果为空就获取用户名
         String userId = post.getUserId();
-        Result user = systemService.findById(userId);
+        Result user = systemUserService.findById(userId);
         Map<String, Object> data = (Map<String, Object>) user.getData();
         String nickname = String.valueOf(data.get("nickname"));
         // 获取头像
