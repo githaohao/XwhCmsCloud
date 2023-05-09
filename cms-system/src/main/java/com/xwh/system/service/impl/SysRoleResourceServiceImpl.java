@@ -1,6 +1,8 @@
 package com.xwh.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xwh.core.utils.RedisUtils;
 import com.xwh.system.entity.SysRole;
 import com.xwh.system.entity.SysRoleResource;
 import com.xwh.system.mapper.SysRoleResourceMapper;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xwh
@@ -22,21 +25,25 @@ public class SysRoleResourceServiceImpl extends ServiceImpl<SysRoleResourceMappe
 
     final SysRoleResourceMapper sysRoleResourceMapper;
     final SysUserRoleService sysUserRoleService;
+    final RedisUtils redisUtils;
 
     public int checkAuthByUserId(String userId, String type, String path) {
-        // 查询用户角色
-        int count = 0;
+        String cacheKey = "auth:" + userId + ":" + type + ":" + path;
+        Integer count = (Integer) redisUtils.get(cacheKey);
+        if (count != null) {
+            return count;
+        }
+        int result = 0;
         List<SysRole> sysRoles = sysUserRoleService.listByUserId(userId, null);
         for (SysRole sysRole : sysRoles) {
-            // 通过用户角色查询当前的 url授权
             String roleId = sysRole.getRoleId();
-            count = sysRoleResourceMapper.checkResource(roleId,path,type);
-            System.out.println(count);
-            if (count > 0){
-                return count;
+            result = sysRoleResourceMapper.checkResource(roleId, path, type);
+            if (result > 0) {
+                break;
             }
         }
-        return count;
+        redisUtils.set(cacheKey, result,7, TimeUnit.DAYS);
+        return result;
     }
 
 
@@ -57,5 +64,19 @@ public class SysRoleResourceServiceImpl extends ServiceImpl<SysRoleResourceMappe
             }
         }
 
+    }
+
+    /**
+     * 删除角色的授权
+     * @param query
+     * @param type
+     * @param path
+     */
+    @Override
+    public void delete(QueryWrapper<SysRoleResource> query, String type, String path) {
+        // 模糊删除 redis 缓存
+        redisUtils.deleteByPattern("auth:*:" + type + ":" + path);
+        // 删除角色的授权
+        remove(query);
     }
 }

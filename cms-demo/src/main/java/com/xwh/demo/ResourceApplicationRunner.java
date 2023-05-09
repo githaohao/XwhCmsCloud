@@ -24,10 +24,15 @@ public class ResourceApplicationRunner implements ApplicationRunner {
     final String serviceTitle = "demo";
     final String servicePack = "com.xwh.article.controller";
 
-
     @Override
-    public void run(ApplicationArguments args) {
-        List<String> apiByPackage = FindClassesByPackage.findApiByPackage(servicePack, service, serviceTitle);
-        sysResourceService.saveResourceIsUpdate(apiByPackage,service);
+    public void run(ApplicationArguments args) throws Exception {
+
     }
+
+
+//    @Override
+//    public void run(ApplicationArguments args) {
+//        List<String> apiByPackage = FindClassesByPackage.findApiByPackage(servicePack, service, serviceTitle);
+//        sysResourceService.saveResourceIsUpdate(apiByPackage,service);
+//    }
 }

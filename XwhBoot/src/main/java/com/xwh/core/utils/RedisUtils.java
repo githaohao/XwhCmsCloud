@@ -704,4 +704,22 @@ public class RedisUtils {
         log.debug("缓存删除数量：" + count + "个");
         log.debug("--------------------------------------------");
     }
+
+    /**
+     * 模糊批量删除
+     *
+     * @param prefix 前缀
+     * @param ids    id
+     * @return
+     */
+    public int deleteByPattern(String s) {
+        try {
+        Set<Object> keys = redisTemplate.keys(s);
+        redisTemplate.delete(keys);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return 0;
+        }
+        return 1;
+    }
 }

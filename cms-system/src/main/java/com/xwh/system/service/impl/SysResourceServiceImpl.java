@@ -109,7 +109,8 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
                     // Delete all role-resource mappings that contain the removed resource
                     QueryWrapper<SysRoleResource> query = new QueryWrapper<>();
                     query.eq("resource_id", existingApi.getResourceId());
-                    sysRoleResourceService.remove(query);
+                    // 删除对应的redis缓存
+                    sysRoleResourceService.delete(query,existingApi.getType(),existingApi.getPath());
                 })
                 .collect(Collectors.toList());
 
